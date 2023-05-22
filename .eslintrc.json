@@ -1,3 +1,6 @@
 {
-  "extends": ["next/core-web-vitals", "prettier"]
+  "extends": ["next/core-web-vitals", "airbnb", "prettier", "plugin:react/jsx-runtime"],
+  "rules":  {
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]
+  }
 }
