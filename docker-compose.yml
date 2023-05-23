@@ -2,6 +2,17 @@ version: '3.8'
 name: uniswap-weth-usdc-usdc-transaction-fee-tracker
 
 services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
   swagger:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
