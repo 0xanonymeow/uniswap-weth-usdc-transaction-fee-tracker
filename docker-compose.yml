@@ -5,8 +5,12 @@ services:
   swagger:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
+    environment:
+      - SWAGGER_JSON=/data/specs.json
     ports:
       - '8080:8080'
+    volumes:
+      - ./specs.json:/data/specs.json
 volumes:
   db:
     driver: local

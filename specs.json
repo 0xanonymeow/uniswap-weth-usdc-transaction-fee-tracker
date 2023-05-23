@@ -1,0 +1,145 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Uniswap WETH-USDC USDC Transaction Fee Tracker",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api"
+    }
+  ],
+  "paths": {
+    "/transaction": {
+      "get": {
+        "summary": "Returns the list of ERC-20 tokens transferred by an address",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "required": false,
+            "description": "the integer page number"
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 100
+            },
+            "required": false,
+            "description": "the number of transactions displayed per page"
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string",
+              "default": "desc"
+            },
+            "required": false,
+            "description": "the sorting preference, use asc to sort by ascending and desc to sort by descending"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the list of USDC transferred by UNISWAP V3 USDC/ETH pool",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Transaction"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "blockNumber": {
+            "type": "string"
+          },
+          "timeStamp": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "nonce": {
+            "type": "string"
+          },
+          "blockHash": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "contractAddress": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "tokenName": {
+            "type": "string"
+          },
+          "tokenSymbol": {
+            "type": "string"
+          },
+          "tokenDecimal": {
+            "type": "string"
+          },
+          "transactionIndex": {
+            "type": "string"
+          },
+          "gas": {
+            "type": "string"
+          },
+          "gasPrice": {
+            "type": "string"
+          },
+          "gasUsed": {
+            "type": "string"
+          },
+          "cumulativeGasUsed": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "confirmations": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
