@@ -1,0 +1,12 @@
+version: '3.8'
+name: uniswap-weth-usdc-usdc-transaction-fee-tracker
+
+services:
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    ports:
+      - '8080:8080'
+volumes:
+  db:
+    driver: local
