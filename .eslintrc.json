@@ -1,6 +1,10 @@
 {
-  "extends": ["next/core-web-vitals", "airbnb", "prettier", "plugin:react/jsx-runtime"],
+  "extends": ["next/core-web-vitals", "airbnb", "airbnb-typescript", "prettier", "plugin:react/jsx-runtime"],
   "rules":  {
-    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
+    "import/prefer-default-export": "off"
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
   }
 }
