@@ -12,7 +12,7 @@
   "paths": {
     "/transaction": {
       "get": {
-        "summary": "Returns the list of ERC-20 tokens transferred by an address",
+        "summary": "Returns the list of USDC transferred by UNISWAP V3 USDC/ETH pool",
         "parameters": [
           {
             "in": "query",
@@ -55,13 +55,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "result": {
+                    "data": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Transaction"
@@ -81,61 +75,13 @@
       "Transaction": {
         "type": "object",
         "properties": {
-          "blockNumber": {
-            "type": "string"
-          },
-          "timeStamp": {
-            "type": "string"
-          },
           "hash": {
             "type": "string"
           },
-          "nonce": {
+          "date": {
             "type": "string"
           },
-          "blockHash": {
-            "type": "string"
-          },
-          "from": {
-            "type": "string"
-          },
-          "contractAddress": {
-            "type": "string"
-          },
-          "to": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          },
-          "tokenName": {
-            "type": "string"
-          },
-          "tokenSymbol": {
-            "type": "string"
-          },
-          "tokenDecimal": {
-            "type": "string"
-          },
-          "transactionIndex": {
-            "type": "string"
-          },
-          "gas": {
-            "type": "string"
-          },
-          "gasPrice": {
-            "type": "string"
-          },
-          "gasUsed": {
-            "type": "string"
-          },
-          "cumulativeGasUsed": {
-            "type": "string"
-          },
-          "input": {
-            "type": "string"
-          },
-          "confirmations": {
+          "fee": {
             "type": "string"
           }
         }

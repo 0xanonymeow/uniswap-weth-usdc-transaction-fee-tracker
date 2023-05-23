@@ -2,6 +2,7 @@ import {
   UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS,
   USDC_CONTRACT_ADDRESS,
 } from '@/constants/contracts';
+import { map } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
@@ -28,6 +29,16 @@ export const GET = async (request: NextRequest) => {
 
   const res = await fetch(`${baseUrl}?${params}`);
   const data: APIResponse<Transaction> = await res.json();
+  const { result } = data;
 
-  return NextResponse.json(data);
+  const transformedData = map(
+    result,
+    ({ hash, timeStamp, gasUsed, gasPrice }: Transaction) => ({
+      hash,
+      date: new Date(Number(timeStamp) * 1000),
+      fee: String(BigInt(gasUsed) * BigInt(gasPrice)),
+    }),
+  );
+
+  return NextResponse.json({ data: transformedData });
 };
