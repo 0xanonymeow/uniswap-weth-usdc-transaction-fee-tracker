@@ -16,12 +16,18 @@ dependencies:
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.23)
+  cron:
+    specifier: ^2.3.0
+    version: 2.3.0
   eslint:
     specifier: 8.41.0
     version: 8.41.0
   eslint-config-next:
     specifier: 13.4.3
     version: 13.4.3(eslint@8.41.0)(typescript@5.0.4)
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   next:
     specifier: 13.4.3
     version: 13.4.3(react-dom@18.2.0)(react@18.2.0)
@@ -54,6 +60,9 @@ devDependencies:
   '@types/aos':
     specifier: ^3.0.4
     version: 3.0.4
+  '@types/cron':
+    specifier: ^2.0.1
+    version: 2.0.1
   '@types/lodash':
     specifier: ^4.14.194
     version: 4.14.194
@@ -69,9 +78,6 @@ devDependencies:
   husky:
     specifier: ^8.0.3
     version: 8.0.3
-  lodash:
-    specifier: ^4.17.21
-    version: 4.17.21
   prettier:
     specifier: ^2.8.8
     version: 2.8.8
@@ -544,6 +550,13 @@ packages:
     resolution: {integrity: sha512-mna6Jd6bdK1NpwarLopGvXOgUoCfj0470IwLxuVOFDElTGI0JTd7xSGQ0AjbAEnHErC/b3fA9t2uB3IXVKmckA==}
     dev: true
 
+  /@types/cron@2.0.1:
+    resolution: {integrity: sha512-WHa/1rtNtD2Q/H0+YTTZoty+/5rcE66iAFX2IY+JuUoOACsevYyFkSYu/2vdw+G5LrmO7Lxowrqm0av4k3qWNQ==}
+    dependencies:
+      '@types/luxon': 3.3.0
+      '@types/node': 20.2.3
+    dev: true
+
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
     dev: true
@@ -553,6 +566,10 @@ packages:
 
   /@types/lodash@4.14.194:
     resolution: {integrity: sha512-r22s9tAS7imvBt2lyHC9B8AGwWnXaYb1tY09oyLkXDs4vArpYJzw09nj8MLx5VfciBPGIb+ZwG0ssYnEPJxn/g==}
+    dev: true
+
+  /@types/luxon@3.3.0:
+    resolution: {integrity: sha512-uKRI5QORDnrGFYgcdAVnHvEIvEZ8noTpP/Bg+HeUzZghwinDlIS87DEenV5r1YoOF9G4x600YsUXLWZ19rmTmg==}
     dev: true
 
   /@types/minimist@1.2.2:
@@ -1158,6 +1175,12 @@ packages:
 
   /create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+
+  /cron@2.3.0:
+    resolution: {integrity: sha512-ZN5HP8zDY41sJolMsbc+GksRATcbvkPKF5wR/qc8FrV4NBVi9ORQa1HmYa5GydaysUB80X9XpRlRkooa5uEtTA==}
+    dependencies:
+      luxon: 3.3.0
+    dev: false
 
   /cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
@@ -2457,7 +2480,6 @@ packages:
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
@@ -2470,6 +2492,11 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+
+  /luxon@3.3.0:
+    resolution: {integrity: sha512-An0UCfG/rSiqtAIiBPO0Y9/zAnHUZxAMiCpTd5h2smgsj7GGmcenvrvww2cqNA8/4A5ZrD1gJpHN2mIHZQF+Mg==}
+    engines: {node: '>=12'}
+    dev: false
 
   /make-error@1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
