@@ -9,16 +9,15 @@ export const GET = async (request: NextRequest) => {
   const page = searchParams.get('page') || '1';
   const offset = searchParams.get('offset') || '50';
 
-  let transactions = [];
-
   try {
+    let transactions;
+
     if (id) {
       transactions = await (
         prisma as PrismaClient
       ).transaction.findFirstOrThrow({
         where: {
           hash: id,
-          tokenSymbol: 'USDC',
         },
       });
     } else {
