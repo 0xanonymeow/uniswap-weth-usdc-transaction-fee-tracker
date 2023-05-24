@@ -9,7 +9,9 @@ datasource db {
 }
 
 model Transaction {
-  id         String @id
-  date  DateTime
-  fee        String
+  id               String @id
+  date             DateTime
+  fee              String
+  value            String @default("0")
+  confirmations    String @default("0")
 }

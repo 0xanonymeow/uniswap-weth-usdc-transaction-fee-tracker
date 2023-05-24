@@ -53,7 +53,7 @@ components:
     Transaction:
       type: object
       properties:
-        hash:
+        id:
           type: string
         date:
           type: string
