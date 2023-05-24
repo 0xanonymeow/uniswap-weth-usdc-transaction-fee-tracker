@@ -25,20 +25,29 @@ const getLiveData = async (
   const res = await fetch(`${baseUrl}?${params}`);
   const data = await res.json();
   const { result } = data;
+
   const transformedData = map(
     result,
     ({
       hash,
       timeStamp,
+      from,
+      value,
+      tokenName,
+      tokenSymbol,
+      tokenDecimal,
       gasUsed,
       gasPrice,
-      value,
       confirmations,
     }) => ({
-      id: hash,
+      hash,
       date: new Date(Number(timeStamp) * 1000),
-      fee: String(BigInt(gasUsed) * BigInt(gasPrice)),
+      from,
       value,
+      tokenName,
+      tokenSymbol,
+      tokenDecimal,
+      fee: String(BigInt(gasUsed) * BigInt(gasPrice)),
       confirmations,
     }),
   ).filter(({ confirmations }) => Number(confirmations) > 0);

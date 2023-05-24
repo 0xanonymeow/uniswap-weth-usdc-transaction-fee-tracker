@@ -9,9 +9,14 @@ datasource db {
 }
 
 model Transaction {
-  id               String @id
+  @@id([hash, from])
+  hash             String @default("0x0")
   date             DateTime
-  fee              String
+  from             String @default("0x0")
   value            String @default("0")
+  tokenName        String @default("")
+  tokenSymbol      String @default("")
+  tokenDecimal     String @default("0")
+  fee              String @default("0")
   confirmations    String @default("0")
 }

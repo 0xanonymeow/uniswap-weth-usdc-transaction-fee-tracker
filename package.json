@@ -11,7 +11,8 @@
     "prepare": "husky install",
     "preinstall": "npx husky install",
     "postinstall": "npx prisma generate",
-    "db:push": "npx prisma db push"
+    "db:push": "npx prisma db push",
+    "db:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@prisma/client": "4.14.1",
