@@ -15,7 +15,7 @@ export const GET = async (request: NextRequest) => {
     if (id) {
       transactions = await (
         prisma as PrismaClient
-      ).transaction.findFirstOrThrow({
+      ).transaction.findMany({
         where: {
           hash: id,
         },

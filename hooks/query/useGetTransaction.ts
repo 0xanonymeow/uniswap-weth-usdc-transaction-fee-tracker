@@ -17,7 +17,7 @@ export const useLazyGetTranasaction = ({
     { data: Transaction },
     string
   >(['transaction'], () =>
-    queryFn({ url: `${baseUrl}/transaction${params}` }),
+    queryFn({ url: `${baseUrl}/transaction?${params}` }),
   );
 
   return {

@@ -9,7 +9,11 @@ import { map } from 'lodash';
 import { useMemo, useState } from 'react';
 
 function App() {
-  const [params, setParams] = useState<GetTransaction>({});
+  const [params, setParams] = useState<GetTransaction>({
+    id: '',
+    page: '1',
+    offset: '50',
+  });
 
   const {
     data,
@@ -39,7 +43,7 @@ function App() {
       <div className="p-32 flex flex-col justify-center">
         <div className="w-full flx gap-2 flex align-middle justify-center">
           <input
-            className="w-1/2 h-8 rounded-md px-4 "
+            className="w-1/2 h-8 rounded-md px-4 dark:text-black"
             value={params.id}
             onChange={(e) =>
               setParams({ ...params, id: e.target.value })
@@ -55,7 +59,7 @@ function App() {
           </button>
         </div>
         <div className="w-full mt-16 flex justify-center">
-          <table className="w-2/3 text-white dark:text-slate-800">
+          <table className="w-full text-white dark:text-slate-800">
             <thead
               className="text-center bg-slate-600 dark:bg-slate-400"
               style={{
@@ -87,7 +91,7 @@ function App() {
                 ) => (
                   <tr key={i} className="">
                     <td>{hash}</td>
-                    <td>${getFeeInUsd(fee)}</td>
+                    <td>${getFeeInUsd(fee, price)}</td>
                     <td>{new Date(date).toLocaleString()}</td>
                     <td>
                       $
