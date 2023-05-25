@@ -10,7 +10,7 @@ const onTick = (onComplete) => {
   onComplete();
 };
 
-const job = new CronJob('*/5 * * * * *', onTick, onComplete, false); // schedule a job to run every 5 seconds
+const job = new CronJob('* * * * *', onTick, onComplete, false); // schedule a job to run every minute
 
 module.exports = {
   job,
