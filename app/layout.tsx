@@ -1,12 +1,13 @@
 import { Inter } from 'next/font/google';
 import React from 'react';
 import './globals.css';
+import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'USDC Transaction Fee Tracker',
-  description: 'Uniswap WETH-USDC USDC Transaction Fee Tracker',
+  description: 'Uniswap WETH-USDC Transaction Fee Tracker',
 };
 
 export default function RootLayout({
@@ -16,7 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <Providers>
+        <body className={inter.className}>{children}</body>
+      </Providers>
     </html>
   );
 }
