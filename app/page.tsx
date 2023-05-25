@@ -3,7 +3,7 @@
 import { useGetEthUsdcPrice } from '@/hooks/query/useGetEthUsdcPrice';
 import { useLazyGetTranasaction } from '@/hooks/query/useGetTransaction';
 import { useGetUsdcUsdPrice } from '@/hooks/query/useGetUsdcUsdPrice';
-import { getFeeInUSD, getValueInUSD } from '@/lib/utils';
+import { getFeeInUsd, getValueInUsd } from '@/lib/utils';
 import { Magnifier } from '@/public/icons/magnifier';
 import { map } from 'lodash';
 import { useMemo, useState } from 'react';
@@ -87,11 +87,11 @@ function App() {
                 ) => (
                   <tr key={i} className="">
                     <td>{hash}</td>
-                    <td>${getFeeInUSD(fee)}</td>
+                    <td>${getFeeInUsd(fee)}</td>
                     <td>{new Date(date).toLocaleString()}</td>
                     <td>
                       $
-                      {getValueInUSD(
+                      {getValueInUsd(
                         value,
                         tokenDecimal,
                         tokenSymbol,
