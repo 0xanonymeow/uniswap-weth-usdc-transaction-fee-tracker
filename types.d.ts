@@ -25,3 +25,9 @@ type Transaction = {
   input: string;
   confirmations: string;
 };
+
+type GetTransaction = {
+  id?: string;
+  page?: string;
+  offset?: string;
+};
