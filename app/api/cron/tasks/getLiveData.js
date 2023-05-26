@@ -7,11 +7,14 @@ const {
 const prisma = require('../../../../lib/prisma');
 const { map } = require('lodash');
 
-const getLiveData = async (
+const getLiveData = async ({
+  hash,
   page = '1',
   offset = '1000',
   sort = 'desc',
-) => {
+  startBlock,
+  endBlock,
+}) => {
   const baseUrl = process.env.ETHERSCAN_BASE_URL;
 
   const params = new URLSearchParams({
@@ -26,6 +29,9 @@ const getLiveData = async (
   const apiKey = process.env.ETHERSCAN_API_KEY;
   if (apiKey) params.append('apikey', apiKey); // if apiKey is undefined, rate limit of 1 request per 5 seconds will be applied
 
+  if (startBlock) params.append('startblock', startBlock);
+  if (endBlock) params.append('endblock', endBlock);
+
   try {
     const res = await fetch(`${baseUrl}?${params}`);
     const data = await res.json();
@@ -33,7 +39,7 @@ const getLiveData = async (
 
     if (isString(result)) throw new Error(result);
 
-    const transformedData = map(
+    let transformedData = map(
       result,
       ({
         hash,
@@ -59,14 +65,16 @@ const getLiveData = async (
       }),
     ).filter(({ confirmations }) => Number(confirmations) > 0);
 
+    if (hash) transformedData = transformedData.filter({ hash });
+
     const { count } = await prisma.transaction.createMany({
       data: transformedData,
       skipDuplicates: true,
     });
     console.log(`inserted ${count} records`);
-    return count;
+    return { data: transformedData, count };
   } catch (e) {
-    console.error(e);
+    console.error(e.message);
   }
 };
 
