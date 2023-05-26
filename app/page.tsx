@@ -5,8 +5,9 @@ import { useLazyGetTranasaction } from '@/hooks/query/useGetTransaction';
 import { useGetUsdcUsdPrice } from '@/hooks/query/useGetUsdcUsdPrice';
 import { getFeeInUsd, getValueInUsd } from '@/lib/utils';
 import { Magnifier } from '@/public/icons/magnifier';
-import { map } from 'lodash';
-import { useMemo, useState } from 'react';
+import { isEmpty, isUndefined, map } from 'lodash';
+import { useEffect, useMemo, useState } from 'react';
+import { useTransaction } from 'wagmi';
 
 function App() {
   const [params, setParams] = useState<GetTransaction>({
@@ -14,12 +15,45 @@ function App() {
     page: '1',
     offset: '50',
   });
+  const [isSearching, setIsSearching] = useState(false);
 
   const {
-    data,
+    data: getTransactionData,
     // isLoading: isGetTransactionLoading,
-    refetch,
-  } = useLazyGetTranasaction(params);
+    isError: isGetTransactionError,
+    refetch: refetchGetTransaction,
+  } = useLazyGetTranasaction({
+    ...params,
+    options: {
+      onSettled: () => setIsSearching(false),
+      refetchOnWindowFocus: false,
+    },
+  });
+
+  const {
+    data: transaction,
+    refetch: refetchTransaction,
+    isError: isTransactionError,
+    isSuccess: isTransactionSuccess,
+  } = useTransaction({
+    hash: params?.id,
+    enabled: false,
+    onSettled: () => setIsSearching(false),
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (!isEmpty(getTransactionData)) return;
+    if (!isUndefined(transaction)) {
+      const { blockNumber } = transaction;
+      setParams({
+        ...params,
+        startblock: Number(blockNumber),
+        endblock: Number(blockNumber),
+      });
+    }
+  }, [isSearching, getTransactionData, transaction, params]);
+
   const {
     data: price,
     // isLoading: isGetEthUsdcPriceLoading
@@ -35,8 +69,30 @@ function App() {
   );
 
   const onSearch = () => {
-    refetch();
+    setIsSearching(true);
+    refetchGetTransaction({
+      throwOnError: false,
+      cancelRefetch: true,
+    });
   };
+
+  const onTxNotFound = () => {
+    if (!isSearching) return;
+    refetchTransaction({ throwOnError: false, cancelRefetch: true });
+  };
+
+  useEffect(() => {
+    if (!isSearching || !params?.id) return;
+    if (isEmpty(getTransactionData)) onTxNotFound();
+  }, [getTransactionData, params, isSearching]);
+
+  useEffect(() => {
+    if (isTransactionSuccess && params?.startblock) {
+      refetchGetTransaction();
+    }
+    if (isTransactionError) {
+    }
+  }, [isTransactionError, isTransactionSuccess, params]);
 
   return (
     <main className="min-h-screen min-w-screen">
@@ -58,7 +114,7 @@ function App() {
             <Magnifier />
           </button>
         </div>
-        <div className="w-full mt-16 flex justify-center">
+        <div className="w-full mt-16 flex flex-col align-middle justify-center">
           <table className="w-full text-white dark:text-slate-800">
             <thead
               className="text-center bg-slate-600 dark:bg-slate-400"
@@ -76,7 +132,7 @@ function App() {
             </thead>
             <tbody className="text-end dark:bg-slate-100 bg-slate-500">
               {map(
-                data,
+                getTransactionData,
                 (
                   {
                     hash,
@@ -89,7 +145,7 @@ function App() {
                   },
                   i,
                 ) => (
-                  <tr key={i} className="">
+                  <tr key={i}>
                     <td>{hash}</td>
                     <td>${getFeeInUsd(fee, price)}</td>
                     <td>{new Date(date).toLocaleString()}</td>
@@ -108,6 +164,11 @@ function App() {
               )}
             </tbody>
           </table>
+          {isTransactionError && (
+            <div className="w-full text-center mt-32">
+              <p className="text-4xl">Not Found</p>
+            </div>
+          )}
         </div>
       </div>
     </main>
