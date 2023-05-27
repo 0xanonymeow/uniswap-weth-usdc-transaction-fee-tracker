@@ -26,10 +26,48 @@ type Transaction = {
   confirmations: string;
 };
 
+type TransformedTransaction = {
+  hash: string;
+  date: Date;
+  from: string;
+  value: string;
+  tokenName: string;
+  tokenSymbol: string;
+  tokenDecimal: string;
+  fee: string;
+  confirmations: string;
+};
+
+type TransformedData = {
+  hash: string;
+  timeStamp: string;
+  from: string;
+  value: string;
+  tokenName: string;
+  tokenSymbol: string;
+  tokenDecimal: string;
+  gasUsed: string;
+  gasPrice: string;
+  confirmations: string;
+};
+
 type GetTransaction = {
   id?: string;
   page?: string;
   offset?: string;
   startblock?: string;
   endblock?: string;
+};
+
+type GetErc20TokenTransferEvent = {
+  page?: string;
+  offset?: string;
+  sort?: 'asc' | 'desc';
+  startBlock?: string;
+  endBlock?: string;
+};
+
+type DateRange = {
+  gte?: string;
+  lte?: string;
 };
