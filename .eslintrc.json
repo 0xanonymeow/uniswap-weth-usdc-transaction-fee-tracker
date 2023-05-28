@@ -7,5 +7,5 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "ignorePatterns": ["*.js"]
+  "ignorePatterns": ["*.js", "*.test.ts"]
 }
