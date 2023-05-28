@@ -1,10 +1,49 @@
 // @ts-nocheck
 
-const { isString } = require('lodash');
 const {
   UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS,
 } = require('../../../../constants/contracts');
 const { map } = require('lodash');
+
+const transformData = (data) =>
+  map(
+    data,
+    ({
+      hash,
+      timeStamp,
+      from,
+      value,
+      tokenName,
+      tokenSymbol,
+      tokenDecimal,
+      gasUsed,
+      gasPrice,
+      confirmations,
+    }) => ({
+      hash,
+      date: new Date(Number(timeStamp) * 1000),
+      from,
+      value,
+      tokenName,
+      tokenSymbol,
+      tokenDecimal,
+      fee: String((Number(gasUsed) * Number(gasPrice)) / 10 ** 9), // gasPrice is denoted in gwei, convert it to eth for later calculation
+      confirmations,
+    }),
+  ).filter(({ confirmations }) => Number(confirmations) > 0);
+
+const createMany = async (result) => {
+  const transformedData = transformData(result);
+
+  const { count } = await prisma.transaction.createMany({
+    data: transformedData,
+    skipDuplicates: true,
+  });
+
+  if (count) console.log(`inserted ${count} records`);
+
+  return [transformedData, transformedData.length];
+};
 
 const prisma = new PrismaClient();
 
@@ -26,44 +65,15 @@ const getLiveData = async () => {
   try {
     const res = await fetch(`${baseUrl}?${params}`);
     const data = await res.json();
-    const { result } = data;
+    const { result, message } = data;
 
-    if (isString(result)) throw new Error(result);
+    if (message === 'NOTOK') throw new Error(result);
 
-    const transformedData = map(
-      result,
-      ({
-        hash,
-        timeStamp,
-        from,
-        value,
-        tokenName,
-        tokenSymbol,
-        tokenDecimal,
-        gasUsed,
-        gasPrice,
-        confirmations,
-      }) => ({
-        hash,
-        date: new Date(Number(timeStamp) * 1000),
-        from,
-        value,
-        tokenName,
-        tokenSymbol,
-        tokenDecimal,
-        fee: String((Number(gasUsed) * Number(gasPrice)) / 10 ** 9), // gasPrice is denoted in gwei, convert it to eth for later calculation
-        confirmations,
-      }),
-    ).filter(({ confirmations }) => Number(confirmations) > 0);
+    const [transformedData, count] = await createMany(result);
 
-    const { count } = await prisma.transaction.createMany({
-      data: transformedData,
-      skipDuplicates: true,
-    });
-    console.log(`inserted ${count} records`);
-    return { count };
+    return [transformedData, count];
   } catch (e) {
-    console.error(e.message);
+    console.error(`getLiveData: ${e.message}`);
   }
 };
 
