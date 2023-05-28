@@ -17,7 +17,6 @@ export const paginatedResponse = (
   const prevPage = page - 1 < 1 ? null : page - 1;
 
   return {
-    statusCode: 'success',
     data: [...result],
     take,
     count: total,
