@@ -15,7 +15,7 @@ export const Magnifier = ({ className }: { className?: string }) => {
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className={className ? className : 'w-6 h-6 '}
+        className={className ? className : 'h-6 w-6 '}
         preserveAspectRatio="xMaxYMax meet"
       >
         <path
