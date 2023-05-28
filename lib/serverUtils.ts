@@ -29,16 +29,15 @@ export const paginatedResponse = (
 
 export const checkIfDateExist = async (date: DateRange) =>
   prisma.$transaction([
-    prisma.transaction.findFirst({
+    prisma.transaction.findMany({
       where: {
-        date: date.startDate,
+        date: {
+          gte: date.startDate,
+          lte: date.endDate,
+        },
       },
     }),
-    prisma.transaction.findFirst({
-      where: {
-        date: date.endDate,
-      },
-    }),
+    prisma.transaction.count(),
   ]);
 
 export const transformData = (
@@ -112,19 +111,11 @@ export const getTransactionById = async (
     });
     if (result.length) return [result, result ? result.length : 0];
   }
-  const [startDate, endDate] = await checkIfDateExist(date);
+  const [transactions] = await checkIfDateExist(date);
 
-  if (startDate && endDate) {
-    // if both startDate and endDate exist in the db
-    const result = await prisma.transaction.findMany({
-      where: {
-        hash: id,
-        date: {
-          gte: date.startDate,
-          lte: date.endDate,
-        },
-      },
-    });
+  // if both startDate and endDate exist in the db
+  if (transactions.length) {
+    const result = filter(transactions, ({ hash }) => hash === id);
 
     if (result.length) return [result, result ? result.length : 0];
   }
@@ -140,6 +131,7 @@ export const getTransactionById = async (
       endBlock: blockNumber,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const transactions = filter(result, ({ hash }) => hash === id);
     const [transformedData, count] = await createMany(transactions);
 
@@ -154,20 +146,11 @@ export const getTransactionsByDate = async (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   pagination: Pagination,
 ): Promise<[TransformedTransaction[], number]> => {
-  const [startDate, endDate] = await checkIfDateExist(date);
+  const [transactions] = await checkIfDateExist(date);
 
-  if (startDate && endDate) {
-    return prisma.$transaction([
-      prisma.transaction.findMany({
-        where: {
-          date: {
-            gte: date.startDate,
-            lte: date.endDate,
-          },
-        },
-      }),
-      prisma.transaction.count(),
-    ]);
+  // if both startDate and endDate exist in the db
+  if (transactions.length) {
+    return [transactions, transactions ? transactions.length : 0];
   }
 
   const startBlockData = getBlockNumberByTimestamp(
