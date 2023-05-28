@@ -41,11 +41,20 @@ export const GET = async (request: NextRequest) => {
   try {
     let result: [TransformedTransaction[], number] = [[], 0];
 
-    if (id) result = await getTransactionById(id, date, { page, take, skip });
+    if (id)
+      result = await getTransactionById(id, date, {
+        page,
+        take,
+        skip,
+      });
     else if (date.startDate && date.endDate)
-      result = await getTransactionsByDate(date,  { page, take, skip });
+      result = await getTransactionsByDate(date, {
+        page,
+        take,
+        skip,
+      });
     else if (!date.startDate && !date.endDate)
-      result = await getTransactions( { page, take, skip });
+      result = await getTransactions({ page, take, skip });
 
     return NextResponse.json(paginatedResponse(result, page, take));
   } catch (e) {
@@ -54,7 +63,7 @@ export const GET = async (request: NextRequest) => {
     }
     return NextResponse.json(
       {
-        message: 'Something went wrong, please try again'
+        message: 'Something went wrong, please try again',
       },
       {
         statusText: 'Internal Server Error',

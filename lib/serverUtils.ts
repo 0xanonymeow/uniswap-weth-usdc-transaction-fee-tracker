@@ -28,6 +28,64 @@ export const paginatedResponse = (
   };
 };
 
+export const checkIfDateExist = async (date: DateRange) =>
+  prisma.$transaction([
+    prisma.transaction.findFirst({
+      where: {
+        date: date.startDate,
+      },
+    }),
+    prisma.transaction.findFirst({
+      where: {
+        date: date.endDate,
+      },
+    }),
+  ]);
+
+export const transformData = (
+  data: Transaction[],
+): TransformedTransaction[] =>
+  map(
+    data,
+    ({
+      hash,
+      timeStamp,
+      from,
+      value,
+      tokenName,
+      tokenSymbol,
+      tokenDecimal,
+      gasUsed,
+      gasPrice,
+      confirmations,
+    }: Transaction) => ({
+      hash,
+      date: new Date(Number(timeStamp) * 1000),
+      from,
+      value,
+      tokenName,
+      tokenSymbol,
+      tokenDecimal,
+      fee: String((Number(gasUsed) * Number(gasPrice)) / 10 ** 9), // gasPrice is denoted in gwei, convert it to eth for later calculation
+      confirmations,
+    }),
+  ).filter(({ confirmations }) => Number(confirmations) > 0);
+
+const createMany = async (
+  result: Transaction[],
+): Promise<[TransformedTransaction[], number]> => {
+  const transformedData = transformData(result);
+
+  const { count } = await prisma.transaction.createMany({
+    data: transformedData,
+    skipDuplicates: true,
+  });
+
+  if (count) console.log(`inserted ${count} records`);
+
+  return [transformedData, transformedData.length];
+};
+
 export const getTransactions = async (pagination: Pagination) =>
   prisma.$transaction([
     prisma.transaction.findMany({
@@ -43,6 +101,7 @@ export const getTransactions = async (pagination: Pagination) =>
 export const getTransactionById = async (
   id: string,
   date: DateRange,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   pagination: Pagination,
 ): Promise<[TransformedTransaction[], number]> => {
   if (!date.startDate && !date.endDate) {
@@ -93,6 +152,7 @@ export const getTransactionById = async (
 
 export const getTransactionsByDate = async (
   date: DateRange,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   pagination: Pagination,
 ): Promise<[TransformedTransaction[], number]> => {
   const [startDate, endDate] = await checkIfDateExist(date);
@@ -140,61 +200,3 @@ export const getTransactionsByDate = async (
 
   return [[], 0];
 };
-
-export const checkIfDateExist = async (date: DateRange) =>
-  prisma.$transaction([
-    prisma.transaction.findFirst({
-      where: {
-        date: date.startDate,
-      },
-    }),
-    prisma.transaction.findFirst({
-      where: {
-        date: date.endDate,
-      },
-    }),
-  ]);
-
-const createMany = async (
-  result: Transaction[],
-): Promise<[TransformedTransaction[], number]> => {
-  const transformedData = transformData(result);
-
-  const { count } = await prisma.transaction.createMany({
-    data: transformedData,
-    skipDuplicates: true,
-  });
-
-  if (count) console.log(`inserted ${count} records`);
-
-  return [transformedData, transformedData.length];
-};
-
-export const transformData = (
-  data: Transaction[],
-): TransformedTransaction[] =>
-  map(
-    data,
-    ({
-      hash,
-      timeStamp,
-      from,
-      value,
-      tokenName,
-      tokenSymbol,
-      tokenDecimal,
-      gasUsed,
-      gasPrice,
-      confirmations,
-    }: Transaction) => ({
-      hash,
-      date: new Date(Number(timeStamp) * 1000),
-      from,
-      value,
-      tokenName,
-      tokenSymbol,
-      tokenDecimal,
-      fee: String((Number(gasUsed) * Number(gasPrice)) / 10 ** 9), // gasPrice is denoted in gwei, convert it to eth for later calculation
-      confirmations,
-    }),
-  ).filter(({ confirmations }) => Number(confirmations) > 0);

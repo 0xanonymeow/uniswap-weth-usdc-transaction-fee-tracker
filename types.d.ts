@@ -72,9 +72,8 @@ type DateRange = {
   endDate?: string;
 };
 
-
 type Pagination = {
-  page?: number
-  take?: number
-  skip?: numbe
-}
+  page?: number;
+  take?: number;
+  skip?: numbe;
+};
