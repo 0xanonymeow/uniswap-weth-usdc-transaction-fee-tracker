@@ -3,7 +3,7 @@ import { QueryKey, UseQueryOptions } from 'react-query';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export const useLazyGetTranasaction = <TData, TError>({
+export const useLazyGetTranasaction = ({
   id,
   page,
   offset,
@@ -12,7 +12,7 @@ export const useLazyGetTranasaction = <TData, TError>({
   options,
 }: GetTransaction & {
   options?: Omit<
-    UseQueryOptions<TData, TError, unknown, QueryKey>,
+    UseQueryOptions<{ data: Transaction }, string, unknown, QueryKey>,
     'queryKey' | 'queryFn'
   >;
 }) => {
@@ -35,7 +35,7 @@ export const useLazyGetTranasaction = <TData, TError>({
 
   return {
     ...query,
-    data: query.data?.data,
+    data: (query.data as { data: Transaction }).data,
     refetch,
   };
 };

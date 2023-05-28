@@ -106,7 +106,9 @@ export const createMany = async (
   return [transformedData, transformedData.length];
 };
 
-export const getTransactions = async (pagination?: Pagination) => {
+export const getTransactions = async (
+  pagination?: Pagination,
+): Promise<[TransformedTransaction[], number]> => {
   const [result, count] = await prisma.$transaction([
     prisma.transaction.findMany({
       orderBy: {
