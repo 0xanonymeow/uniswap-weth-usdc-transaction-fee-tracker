@@ -1,7 +1,8 @@
-import { UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS } from '@/constants/contracts';
-
-const baseUrl = process.env.ETHERSCAN_BASE_URL;
-const apiKey = process.env.ETHERSCAN_API_KEY; // if apiKey is undefined, rate limit of 1 request per 5 seconds will be applied
+import {
+  ETHERSCAN_API_KEY,
+  ETHERSCAN_BASE_URL,
+  UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS,
+} from '@/constants';
 
 export const getEventTransactions = async ({
   page = '1',
@@ -21,10 +22,10 @@ export const getEventTransactions = async ({
 
   if (startBlock) params.append('startblock', startBlock);
   if (endBlock) params.append('endblock', endBlock);
-  if (apiKey) params.append('apikey', apiKey);
+  if (ETHERSCAN_API_KEY) params.append('apikey', ETHERSCAN_API_KEY);
 
   try {
-    const res = await fetch(`${baseUrl}?${params}`);
+    const res = await fetch(`${ETHERSCAN_BASE_URL}?${params}`);
     const data = await res.json();
     const { result, message } = data;
 
@@ -44,10 +45,10 @@ export const getBlockNumberByHash = async (id: string) => {
     txhash: id,
   });
 
-  if (apiKey) params.append('apikey', apiKey);
+  if (ETHERSCAN_API_KEY) params.append('apikey', ETHERSCAN_API_KEY);
 
   try {
-    const res = await fetch(`${baseUrl}?${params}`);
+    const res = await fetch(`${ETHERSCAN_BASE_URL}?${params}`);
     const data = await res.json();
     const { result, message } = data;
 
@@ -71,10 +72,10 @@ export const getBlockNumberByTimestamp = async (
     closest,
   });
 
-  if (apiKey) params.append('apikey', apiKey);
+  if (ETHERSCAN_API_KEY) params.append('apikey', ETHERSCAN_API_KEY);
 
   try {
-    const res = await fetch(`${baseUrl}?${params}`);
+    const res = await fetch(`${ETHERSCAN_BASE_URL}?${params}`);
     const data = await res.json();
     const { result, message } = data;
 

@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -18,5 +19,8 @@ export default defineConfig({
       excludeNodeModules: true,
       extension: ['.ts'],
     },
+  },
+  resolve: {
+    alias: [{ find: '@', replacement: resolve(__dirname, './') }],
   },
 });
