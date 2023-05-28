@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-const {
-  UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS,
-} = require('../../../../constants/contracts');
+const UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS =
+  '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640';
+
 const { map } = require('lodash');
 const { PrismaClient } = require('@prisma/client');
 
