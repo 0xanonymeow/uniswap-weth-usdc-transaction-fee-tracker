@@ -18,6 +18,7 @@ export const GET = async (request: NextRequest) => {
   const id = searchParams.get('id');
   const startDate = searchParams.get('startDate');
   const endDate = searchParams.get('endDate');
+  const forceRefresh = searchParams.get('forceRefresh') === 'true';
 
   if ((startDate && !endDate) || (!startDate && endDate)) {
     return NextResponse.json(
@@ -42,13 +43,13 @@ export const GET = async (request: NextRequest) => {
     let result: [TransformedTransaction[], number] = [[], 0];
 
     if (id)
-      result = await getTransactionById(id, date, {
+      result = await getTransactionById(id, date, forceRefresh, {
         page,
         take,
         skip,
       });
     else if (date.startDate && date.endDate)
-      result = await getTransactionsByDate(date, {
+      result = await getTransactionsByDate(date, forceRefresh, {
         page,
         take,
         skip,

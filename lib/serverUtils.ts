@@ -106,8 +106,9 @@ export const getTransactions = async (pagination: Pagination) =>
 export const getTransactionById = async (
   id: string,
   date: DateRange,
+  forceRefresh?: boolean,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  pagination: Pagination,
+  pagination?: Pagination,
 ): Promise<[TransformedTransaction[], number]> => {
   if (!date.startDate && !date.endDate) {
     const result = await prisma.transaction.findMany({
@@ -118,23 +119,26 @@ export const getTransactionById = async (
     });
     if (result.length) return [result, result ? result.length : 0];
   }
-  const [startDate, endDate] = await checkIfDateExist(date);
 
-  // if both startDate and endDate exist in the db
-  if (startDate && endDate) {
-    const transactions = await prisma.transaction.findMany({
-      where: {
-        date: {
-          gte: startDate.date,
-          lte: endDate.date,
+  if (!forceRefresh) {
+    const [startDate, endDate] = await checkIfDateExist(date);
+
+    // if both startDate and endDate exist in the db
+    if (startDate && endDate) {
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          date: {
+            gte: startDate.date,
+            lte: endDate.date,
+          },
+          hash: id,
         },
-        hash: id,
-      },
-    });
+      });
 
-    const result = filter(transactions, ({ hash }) => hash === id);
+      const result = filter(transactions, ({ hash }) => hash === id);
 
-    if (result.length) return [result, result ? result.length : 0];
+      if (result.length) return [result, result ? result.length : 0];
+    }
   }
 
   const blockNumber = await getBlockNumberByHash(id);
@@ -160,22 +164,25 @@ export const getTransactionById = async (
 
 export const getTransactionsByDate = async (
   date: DateRange,
+  forceRefresh?: boolean,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  pagination: Pagination,
+  pagination?: Pagination,
 ): Promise<[TransformedTransaction[], number]> => {
-  const [startDate, endDate] = await checkIfDateExist(date);
-  console.log('getTransactionByDate', startDate, endDate);
-  // if both startDate and endDate exist in the db
-  if (startDate && endDate) {
-    const result = await prisma.transaction.findMany({
-      where: {
-        date: {
-          gte: startDate.date,
-          lte: endDate.date,
+  if (!forceRefresh) {
+    const [startDate, endDate] = await checkIfDateExist(date);
+
+    // if both startDate and endDate exist in the db
+    if (startDate && endDate) {
+      const result = await prisma.transaction.findMany({
+        where: {
+          date: {
+            gte: startDate.date,
+            lte: endDate.date,
+          },
         },
-      },
-    });
-    if (result.length) return [result, result ? result.length : 0];
+      });
+      if (result.length) return [result, result ? result.length : 0];
+    }
   }
 
   const startBlockData = getBlockNumberByTimestamp(
