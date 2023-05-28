@@ -1,4 +1,4 @@
-import { queryFn } from '@/lib/utils';
+import { queryFn } from '@/lib/clientUtils';
 import { get } from 'lodash';
 import { useQuery } from 'react-query';
 

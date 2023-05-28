@@ -1,4 +1,4 @@
-import { queryFn, useLazyQuery } from '@/lib/utils';
+import { queryFn, useLazyQuery } from '@/lib/clientUtils';
 import { QueryKey, UseQueryOptions } from 'react-query';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;

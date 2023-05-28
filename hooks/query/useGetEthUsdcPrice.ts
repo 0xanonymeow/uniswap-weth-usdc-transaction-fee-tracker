@@ -1,4 +1,4 @@
-import { queryFn } from '@/lib/utils';
+import { queryFn } from '@/lib/clientUtils';
 import { useQuery } from 'react-query';
 
 const baseUrl = process.env.NEXT_PUBLIC_BINANCE_API_BASE_URL;
