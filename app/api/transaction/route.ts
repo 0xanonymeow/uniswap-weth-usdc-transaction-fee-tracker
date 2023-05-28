@@ -1,56 +1,65 @@
-import prisma from '@/lib/prisma';
-import { PrismaClient } from '@prisma/client';
+import {
+  getTransactionById,
+  getTransactions,
+  getTransactionsByDate,
+  paginatedResponse,
+} from '@/lib/serverUtils';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
-import { getLiveData } from '../cron/tasks/getLiveData';
 
 export const GET = async (request: NextRequest) => {
   const { searchParams } = request.nextUrl;
+  const page = Number(searchParams.get('page') || '1');
+  const take = Number(searchParams.get('take') || '50');
+
+  const skip = (Number(page) - 1) * Number(take);
+
   const id = searchParams.get('id');
-  const page = searchParams.get('page') || '1';
-  const offset = searchParams.get('offset') || '50';
-  const startBlock = searchParams.get('startblock');
-  const endBlock = searchParams.get('endblock');
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
+
+  if ((startDate && !endDate) || (!startDate && endDate)) {
+    return NextResponse.json(
+      {
+        message: 'startDate and endDate must be provided together',
+      },
+      {
+        statusText: 'Bad Request',
+        status: 400,
+      },
+    );
+  }
+
+  const date: DateRange = {};
+
+  if (startDate && endDate) {
+    date.startDate = startDate;
+    date.endDate = endDate;
+  }
 
   try {
-    let transactions;
+    let result: [TransformedTransaction[], number] = [[], 0];
 
-    if (id) {
-      if (startBlock && endBlock) {
-        const { data } = await getLiveData({
-          page: 1,
-          offset: 1,
-          startBlock,
-          endBlock,
-        });
-        transactions = data;
-      } else {
-        transactions = await (
-          prisma as PrismaClient
-        ).transaction.findMany({
-          where: {
-            hash: id,
-          },
-        });
-      }
-    } else {
-      transactions = await (
-        prisma as PrismaClient
-      ).transaction.findMany({
-        orderBy: {
-          date: 'desc',
-        },
-        skip: (Number(page) - 1) * Number(offset),
-        take: Number(offset),
-      });
-    }
+    if (id) result = await getTransactionById(id, date, { page, take, skip });
+    else if (date.startDate && date.endDate)
+      result = await getTransactionsByDate(date,  { page, take, skip });
+    else if (!date.startDate && !date.endDate)
+      result = await getTransactions( { page, take, skip });
 
-    return NextResponse.json({ data: transactions });
+    return NextResponse.json(paginatedResponse(result, page, take));
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
-      if (e.code === 'P2025')
-        return new Response('Not Found', { status: 404 });
+      if (e.code === 'P2025') return notFound();
     }
-    return new Response('Internal Server Error', { status: 500 });
+    return NextResponse.json(
+      {
+        message: 'Something went wrong, please try again'
+      },
+      {
+        statusText: 'Internal Server Error',
+        status: 500,
+      },
+    );
   }
 };
