@@ -54,7 +54,9 @@ export const getBlockNumberByHash = async (id: string) => {
 
     if (message === 'NOTOK') throw new Error(result);
 
-    return Number(result?.blockNumber).toString(10);
+    return result === null
+      ? 0
+      : Number(result?.blockNumber).toString(10);
   } catch (e) {
     console.error(`getBlockNumberByHash: ${(e as Error).message}`);
   }

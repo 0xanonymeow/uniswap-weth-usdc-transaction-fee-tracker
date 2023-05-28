@@ -4,8 +4,6 @@ import {
   getTransactionsByDate,
   paginatedResponse,
 } from '@/lib/serverUtils';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
@@ -42,13 +40,13 @@ export const GET = async (request: NextRequest) => {
   try {
     let result: [TransformedTransaction[], number] = [[], 0];
 
-    if (id)
+    if (id) {
       result = await getTransactionById(id, date, forceRefresh, {
         page,
         take,
         skip,
       });
-    else if (date.startDate && date.endDate)
+    } else if (date.startDate && date.endDate)
       result = await getTransactionsByDate(date, forceRefresh, {
         page,
         take,
@@ -59,9 +57,16 @@ export const GET = async (request: NextRequest) => {
 
     return NextResponse.json(paginatedResponse(result, page, take));
   } catch (e) {
-    if (e instanceof PrismaClientKnownRequestError) {
-      if (e.code === 'P2025') return notFound();
-    }
+    if ((e as Error).message === 'NEXT_NOT_FOUND')
+      return NextResponse.json(
+        {
+          message: 'transaction not found',
+        },
+        {
+          statusText: 'Not Found',
+          status: 404,
+        },
+      );
     return NextResponse.json(
       {
         message: 'Something went wrong, please try again',

@@ -5,6 +5,7 @@ import {
 } from '@/lib/etherscan';
 import prisma from '@/lib/prisma';
 import { filter, map } from 'lodash';
+import { notFound } from 'next/navigation';
 
 export const paginatedResponse = (
   data: [unknown[], number],
@@ -27,25 +28,39 @@ export const paginatedResponse = (
   };
 };
 
-export const checkIfDateExist = async (date: DateRange) =>
-  prisma.$transaction([
+export const checkIfDateExist = async (date: DateRange) => {
+  if (!date.startDate || !date.endDate) return [null, null];
+
+  const startDate = new Date(date.startDate!);
+  const endDate = new Date(date.endDate!);
+  const startDateOffset = `T${
+    startDate.getHours() + startDate.getMinutes() + 1
+  }:00.000Z`;
+  const endDateOffset = `T${
+    endDate.getHours() + endDate.getMinutes() - 1
+  }:00.000Z`;
+
+  return prisma.$transaction([
     prisma.transaction.findFirst({
       where: {
         date: {
           gte: date.startDate,
-          lte: `${date.startDate?.split('T')?.[0]}T23:59:59.000Z`,
+          lte: `${
+            date.startDate?.split('T')?.[0]
+          }T${startDateOffset}`,
         },
       },
     }),
     prisma.transaction.findFirst({
       where: {
         date: {
-          gte: `${date.endDate?.split('T')?.[0]}T00:00:00.000Z`,
+          gte: `${date.endDate?.split('T')?.[0]}T${endDateOffset}`,
           lte: date.endDate,
         },
       },
     }),
   ]);
+};
 
 export const transformData = (
   data: Transaction[],
@@ -91,8 +106,8 @@ export const createMany = async (
   return [transformedData, transformedData.length];
 };
 
-export const getTransactions = async (pagination?: Pagination) =>
-  prisma.$transaction([
+export const getTransactions = async (pagination?: Pagination) => {
+  const [result, count] = await prisma.$transaction([
     prisma.transaction.findMany({
       orderBy: {
         date: 'desc',
@@ -102,6 +117,10 @@ export const getTransactions = async (pagination?: Pagination) =>
     }),
     prisma.transaction.count(),
   ]);
+  if (result.length) return [result, count];
+
+  return notFound();
+};
 
 export const getTransactionById = async (
   id: string,
@@ -142,7 +161,6 @@ export const getTransactionById = async (
   }
 
   const blockNumber = await getBlockNumberByHash(id);
-
   if (blockNumber) {
     const [result] = await getEventTransactions({
       // if not, find the event transactions from the blockchain
@@ -159,7 +177,7 @@ export const getTransactionById = async (
     return [transformedData, count];
   }
 
-  return [[], 0];
+  return notFound();
 };
 
 export const getTransactionsByDate = async (
@@ -212,5 +230,5 @@ export const getTransactionsByDate = async (
     return [transformedData, count];
   }
 
-  return [[], 0];
+  return notFound();
 };
