@@ -4,6 +4,7 @@ const {
   UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS,
 } = require('../../../../constants/contracts');
 const { map } = require('lodash');
+const { PrismaClient } = require('@prisma/client');
 
 const transformData = (data) =>
   map(
@@ -55,7 +56,7 @@ const getLiveData = async () => {
     action: 'tokentx',
     address: UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS,
     page: '1',
-    offset: '1000',
+    offset: '10000',
     sort: 'desc',
   });
 
