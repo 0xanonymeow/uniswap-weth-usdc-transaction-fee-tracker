@@ -29,15 +29,22 @@ export const paginatedResponse = (
 
 export const checkIfDateExist = async (date: DateRange) =>
   prisma.$transaction([
-    prisma.transaction.findMany({
+    prisma.transaction.findFirst({
       where: {
         date: {
           gte: date.startDate,
+          lte: `${date.startDate?.split('T')?.[0]}T23:59:59.000Z`,
+        },
+      },
+    }),
+    prisma.transaction.findFirst({
+      where: {
+        date: {
+          gte: `${date.endDate?.split('T')?.[0]}T00:00:00.000Z`,
           lte: date.endDate,
         },
       },
     }),
-    prisma.transaction.count(),
   ]);
 
 export const transformData = (
@@ -111,10 +118,20 @@ export const getTransactionById = async (
     });
     if (result.length) return [result, result ? result.length : 0];
   }
-  const [transactions] = await checkIfDateExist(date);
+  const [startDate, endDate] = await checkIfDateExist(date);
 
   // if both startDate and endDate exist in the db
-  if (transactions.length) {
+  if (startDate && endDate) {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        date: {
+          gte: startDate.date,
+          lte: endDate.date,
+        },
+        hash: id,
+      },
+    });
+
     const result = filter(transactions, ({ hash }) => hash === id);
 
     if (result.length) return [result, result ? result.length : 0];
@@ -146,11 +163,19 @@ export const getTransactionsByDate = async (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   pagination: Pagination,
 ): Promise<[TransformedTransaction[], number]> => {
-  const [transactions] = await checkIfDateExist(date);
-
+  const [startDate, endDate] = await checkIfDateExist(date);
+  console.log('getTransactionByDate', startDate, endDate);
   // if both startDate and endDate exist in the db
-  if (transactions.length) {
-    return [transactions, transactions ? transactions.length : 0];
+  if (startDate && endDate) {
+    const result = await prisma.transaction.findMany({
+      where: {
+        date: {
+          gte: startDate.date,
+          lte: endDate.date,
+        },
+      },
+    });
+    if (result.length) return [result, result ? result.length : 0];
   }
 
   const startBlockData = getBlockNumberByTimestamp(
