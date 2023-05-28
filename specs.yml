@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Uniswap WETH-USDC USDC Transaction Fee Tracker
+  title: Uniswap WETH-USDC Transaction Fee Tracker
   version: 0.1.0
 
 servers:
@@ -9,8 +9,17 @@ servers:
 paths:
   /transaction:
     get:
-      summary: Returns the list of USDC transferred by UNISWAP V3 USDC/ETH pool
+      tags: 
+        - Transactions
+      summary: List of WETH and USDC transferred by UNISWAP V3 USDC/ETH pool
       parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: false
+          description: Transaction hash
+          example: '0x9b4c5f5e9b5b82f01c3126d65679c9949a5fe24679e297adb4cd51cb5af9c9b'
         - in: query
           name: page
           schema:
@@ -18,22 +27,53 @@ paths:
             minimum: 1
             default: 1
           required: false
-          description: the integer page number
+          description: page number
+          example: 1
         - in: query
-          name: offset
+          name: take
           schema:
             type: integer
             minimum: 1
-            default: 100
+            default: 50
           required: false
-          description: the number of transactions displayed per page
+          description: The number of transactions displayed per page
+          example: 50
         - in: query
           name: sort
           schema:
             type: string
             default: desc
           required: false
-          description: the sorting preference, use asc to sort by ascending and desc to sort by descending
+          description: The sorting preference, use asc to sort by ascending and desc to sort by descending
+          example: asc | desc
+        - in: query
+          name: startDate
+          schema:
+            type: string
+          required: false
+          description: Start date
+          example: YYYY-MM-DDTHH:mm:ss.sssZ
+        - in: query
+          name: endDate
+          schema:
+            type: string
+          required: false
+          description: End date
+          example: YYYY-MM-DDTHH:mm:ss.sssZ
+        - in: query
+          name: forceRefresh
+          schema:
+            type: boolean
+            default: false
+          required: false
+          description: Force to get data from blockchain
+          example: false
+        - in: query
+          name: apiKey
+          schema:
+            type: string
+          required: false
+          description: Etherscan API Key
 
       responses:
         '200':
@@ -47,15 +87,114 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Transaction'
+                  take:
+                    type: number
+                  count:
+                    type: number
+                  currentPage:
+                    type: number
+                  nextPage:
+                    type: number
+                  prevPage:
+                    type: number
+                  lastPage:
+                    type: number
+              example: 
+                take: 50
+                count: 2
+                currentPage: 1
+                nextPage: null
+                prevPage: null
+                lastPage: 1
+                data: [{
+                  date: '2023-05-28T10:00:11.000Z',
+                  fee: '3149538.291756912',
+                  hash: '0x9b4c5f5e9b5b82f01c3126d65679c9949a5fe24679e297adb4cd51cb5af9c9b',
+                  from: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
+                  value: '30000000000000000',
+                  tokenName: 'Wrapped Ether',
+                  tokenSymbol: 'WETH',
+                  tokenDecimal: '18',
+                  confirmations: '874',
+                },
+                {
+                  date: '2023-05-28T10:00:11.000',
+                  fee: '3149538.291756912',
+                  hash: '0x9b4c5f5e9b5b82f01c3126d65679c9949a5fe24679e297adb4cd51cb5af9c9b',
+                  from: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
+                  value: '55325862',
+                  tokenName: 'USD Coin',
+                  tokenSymbol: 'USDC',
+                  tokenDecimal: '6',
+                  confirmations: '874',
+                }
+                ]
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                  status: 
+                    type: number
+                  statusText:
+                    type: string
+              example: 
+                message: startDate and endDate must be provided together
+                status: 400
+                statusText: 'Bad Request'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                  status: 
+                    type: number
+                  statusText:
+                    type: string
+              example: 
+                message: 'Something went wrong, please try again'
+                status: 500
+                statusText: 'Internal Server Error'
 
 components:
   schemas:
     Transaction:
       type: object
       properties:
-        id:
-          type: string
         date:
           type: string
         fee:
           type: string
+        hash: 
+          type: string
+        from: 
+          type: string
+        value: 
+          type: string
+        tokenName: 
+          type: string
+        tokenSymbol: 
+          type: string
+        tokenDecimal: 
+          type: string
+        confirmations: 
+          type: string
+      example: 
+        id:
+        date: '2023-05-28T10:00:11.000Z'
+        fee: '3149538.291756912'
+        hash: '0x9b4c5f5e9b5b82f01c3126d65679c9949a5fe24679e297adb4cd51cb5af9c9b'
+        from: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b'
+        value: '30000000000000000'
+        tokenName: 'Wrapped Ether'
+        tokenSymbol: 'WETH'
+        tokenDecimal: '18'
+        confirmations: '874'
