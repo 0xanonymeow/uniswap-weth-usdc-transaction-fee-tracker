@@ -59,7 +59,7 @@ type GetTransaction = {
   endblock?: string;
 };
 
-type GetErc20TokenTransferEvent = {
+type GetEventTransactions = {
   page?: string;
   offset?: string;
   sort?: 'asc' | 'desc';
@@ -68,6 +68,13 @@ type GetErc20TokenTransferEvent = {
 };
 
 type DateRange = {
-  gte?: string;
-  lte?: string;
+  startDate?: string;
+  endDate?: string;
 };
+
+
+type Pagination = {
+  page?: number
+  take?: number
+  skip?: numbe
+}

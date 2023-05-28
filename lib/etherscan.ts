@@ -1,19 +1,15 @@
 import { UNISWAP_WETH_USDC_PAIR_CONTRACT_ADDRESS } from '@/constants/contracts';
-import prisma from '@/lib/prisma';
-import { isString, map } from 'lodash';
 
 const baseUrl = process.env.ETHERSCAN_BASE_URL;
 const apiKey = process.env.ETHERSCAN_API_KEY; // if apiKey is undefined, rate limit of 1 request per 5 seconds will be applied
 
 export const getEventTransactions = async ({
   page = '1',
-  offset = '1000',
+  offset = '10000',
   sort = 'desc',
   startBlock,
   endBlock,
-}: GetErc20TokenTransferEvent): Promise<
-  [TransformedTransaction[], number]
-> => {
+}: GetEventTransactions): Promise<[Transaction[], number]> => {
   const params = new URLSearchParams({
     module: 'account',
     action: 'tokentx',
@@ -30,44 +26,13 @@ export const getEventTransactions = async ({
   try {
     const res = await fetch(`${baseUrl}?${params}`);
     const data = await res.json();
-    const { result } = data;
+    const { result, message } = data;
 
-    if (isString(result)) throw new Error(result);
+    if (message === 'NOTOK') throw new Error(result);
 
-    const transformedData = map(
-      result,
-      ({
-        hash,
-        timeStamp,
-        from,
-        value,
-        tokenName,
-        tokenSymbol,
-        tokenDecimal,
-        gasUsed,
-        gasPrice,
-        confirmations,
-      }) => ({
-        hash,
-        date: new Date(Number(timeStamp) * 1000),
-        from,
-        value,
-        tokenName,
-        tokenSymbol,
-        tokenDecimal,
-        fee: String((Number(gasUsed) * Number(gasPrice)) / 10 ** 9), // gasPrice is denoted in gwei, convert it to eth for later calculation
-        confirmations,
-      }),
-    ).filter(({ confirmations }) => Number(confirmations) > 0);
-
-    const { count } = await prisma.transaction.createMany({
-      data: transformedData,
-      skipDuplicates: true,
-    });
-    console.log(`inserted ${count} records`);
-    return [transformedData, count];
+    return [result, result ? result.length : 0];
   } catch (e) {
-    console.error((e as Error).message);
+    console.error(`getEventTransactions: ${(e as Error).message}`);
   }
   return [[], 0];
 };
@@ -84,13 +49,13 @@ export const getBlockNumberByHash = async (id: string) => {
   try {
     const res = await fetch(`${baseUrl}?${params}`);
     const data = await res.json();
-    const { result } = data;
+    const { result, message } = data;
 
-    if (isString(result)) throw new Error(result);
+    if (message === 'NOTOK') throw new Error(result);
 
-    return result?.blockNumber.toString(10);
+    return Number(result?.blockNumber).toString(10);
   } catch (e) {
-    console.error((e as Error).message);
+    console.error(`getBlockNumberByHash: ${(e as Error).message}`);
   }
   return 0;
 };
@@ -102,7 +67,7 @@ export const getBlockNumberByTimestamp = async (
   const params = new URLSearchParams({
     module: 'block',
     action: 'getblocknobytime',
-    timestamp,
+    timestamp: String(Date.parse(timestamp) / 1000),
     closest,
   });
 
@@ -111,13 +76,15 @@ export const getBlockNumberByTimestamp = async (
   try {
     const res = await fetch(`${baseUrl}?${params}`);
     const data = await res.json();
-    const { result } = data;
+    const { result, message } = data;
 
-    if (isString(result)) throw new Error(result);
+    if (message === 'NOTOK') throw new Error(result);
 
     return result;
   } catch (e) {
-    console.error((e as Error).message);
+    console.error(
+      `getBlockNumberByTimestamp: ${(e as Error).message}`,
+    );
   }
   return 0;
 };
