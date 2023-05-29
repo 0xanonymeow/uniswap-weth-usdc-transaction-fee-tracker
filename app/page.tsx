@@ -16,6 +16,7 @@ function App() {
     page: '1',
     take: '50',
   });
+  const [showDatetimePicker, setShowDatetimePicker] = useState(false);
 
   const {
     data: ethPrice,
@@ -31,18 +32,10 @@ function App() {
     [ethPrice, usdcUsd],
   );
 
-  const {
-    data,
-    refetch,
-    error: getTransactionError,
-  } = useLazyGetTranasaction(params);
+  const { data, refetch } = useLazyGetTranasaction(params);
+  const getTransactionError = useMemo(() => data?.message, [data]);
 
-  console.log(params);
   const lastPage = useMemo(() => data?.lastPage || 1, [data]);
-
-  useEffect(() => {
-    if (getTransactionError) toast.error(getTransactionError);
-  }, [getTransactionError]);
 
   const now = new Date();
   const start = moment(
@@ -70,13 +63,12 @@ function App() {
     format: 'DD-MM-YYYY HH:mm',
     sundayFirst: false,
   };
-  function handleApply(startDate: Moment, endDate: Moment) {
+
+  const handleApply = (startDate: Moment, endDate: Moment) => {
     setRange({ start: startDate, end: endDate });
-  }
+  };
 
   const onSearch = () => {
-    const startDate = new Date(range.start.format()).toISOString();
-    const endDate = new Date(range.end.format()).toISOString();
     refetch();
   };
 
@@ -89,8 +81,24 @@ function App() {
   };
 
   useEffect(() => {
-    refetch()
-  }, [params, refetch])
+    refetch();
+  }, [params?.page, params?.take, refetch]);
+
+  useEffect(() => {
+    if (!showDatetimePicker) {
+      delete params.startDate;
+      delete params.endDate;
+      return setParams({ ...params });
+    }
+    const startDate = new Date(range.start.format()).toISOString();
+    const endDate = new Date(range.end.format()).toISOString();
+
+    setParams({ ...params, startDate, endDate });
+  }, [range.start, range.end, showDatetimePicker]);
+
+  useEffect(() => {
+    if (data?.message) toast.error(data?.message);
+  }, [data]);
 
   return (
     <main className="min-w-screen min-h-screen">
@@ -114,25 +122,42 @@ function App() {
             </button>
           </div>
           <div className="flex justify-center mt-28">
-            {/* @ts-ignore */}
-            <DateTimePicker
-              ranges={ranges}
-              start={range.start}
-              end={range.end}
-              local={local}
-              applyCallback={handleApply}
-              smartMode
-            >
-              <input
-                className="w-[400px] rounded-md py-4  text-center bg-slate-400 text-white"
-                placeholder="Date range"
-                value={`${range.start.format(
-                  'DD-MM-YYYY HH:mm',
-                )} - ${range.end.format('DD-MM-YYYY HH:mm')}`}
-                // value={`${range.start} - ${range.end}`}
-                disabled
-              />
-            </DateTimePicker>
+            <div className="flex items-center mr-8">
+              <button
+                type="button"
+                className="px-6 py-4 bg-blue-300 rounded-md"
+                onClick={() =>
+                  setShowDatetimePicker(!showDatetimePicker)
+                }
+              >
+                <p className="text-white">
+                  {`${
+                    showDatetimePicker ? 'Remove' : 'Add'
+                  } date filter`}
+                </p>
+              </button>
+            </div>
+            {showDatetimePicker && (
+              // @ts-ignore
+              <DateTimePicker
+                ranges={ranges}
+                start={range.start}
+                end={range.end}
+                local={local}
+                applyCallback={handleApply}
+                smartMode
+              >
+                <input
+                  className="w-[400px] rounded-md py-4  text-center bg-slate-400 text-white"
+                  placeholder="Date range"
+                  value={`${range.start.format(
+                    'DD-MM-YYYY HH:mm',
+                  )} - ${range.end.format('DD-MM-YYYY HH:mm')}`}
+                  // value={`${range.start} - ${range.end}`}
+                  disabled
+                />
+              </DateTimePicker>
+            )}
           </div>
         </div>
         <div className="mt-16 flex w-full flex-col justify-center align-middle">
