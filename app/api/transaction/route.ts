@@ -56,7 +56,9 @@ export const GET = async (request: NextRequest) => {
     else if (!date.startDate && !date.endDate)
       result = await getTransactions({ page, take, skip });
 
-    const { totalETH, totalUSDC } = getTotalTokenAmount(result[0]);
+    const { totalETH, totalUSDC } = await getTotalTokenAmount(
+      result[0],
+    );
 
     return NextResponse.json(
       paginatedResponse({
