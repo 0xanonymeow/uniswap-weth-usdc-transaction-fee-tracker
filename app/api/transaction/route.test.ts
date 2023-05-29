@@ -1,5 +1,4 @@
 import {
-  getTotalTokenAmount,
   getTransactionById,
   getTransactions,
   getTransactionsByDate,
@@ -15,7 +14,6 @@ vi.mock('@/lib/serverUtils', async () => ({
   getTransactions: vi.fn(),
   getTransactionById: vi.fn(),
   getTransactionsByDate: vi.fn(),
-  getTotalTokenAmount: vi.fn(),
 }));
 
 const baseUrl = process.env.VITE_API_BASE_URL;
@@ -92,10 +90,7 @@ describe('Transaction service', () => {
       mockTransactions,
       mockTransactions.length,
     ]);
-    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
-      totalETH,
-      totalUSDC,
-    });
+
     const params = new URLSearchParams({
       id,
     });
@@ -130,10 +125,7 @@ describe('Transaction service', () => {
     const mockTransactions = transactions.slice(0, 2);
     const totalETH = 30000000000000000;
     const totalUSDC = 55325862;
-    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
-      totalETH,
-      totalUSDC,
-    });
+
     (getTransactionById as Mock).mockResolvedValueOnce([
       mockTransactions,
       mockTransactions.length,
@@ -171,10 +163,7 @@ describe('Transaction service', () => {
     const mockTransactions = transactions.slice(0, 2);
     const totalETH = 30000000000000000;
     const totalUSDC = 55325862;
-    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
-      totalETH,
-      totalUSDC,
-    });
+
     (getTransactionsByDate as Mock).mockResolvedValueOnce([
       mockTransactions,
       mockTransactions.length,
@@ -209,10 +198,7 @@ describe('Transaction service', () => {
     const mockTransactions = transactions.slice(0, 2);
     const totalETH = 30000000000000000;
     const totalUSDC = 55325862;
-    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
-      totalETH,
-      totalUSDC,
-    });
+
     (getTransactions as Mock).mockResolvedValueOnce([
       mockTransactions,
       mockTransactions.length,
