@@ -1,4 +1,5 @@
 import {
+  getTotalTokenAmount,
   getTransactionById,
   getTransactions,
   getTransactionsByDate,
@@ -14,6 +15,7 @@ vi.mock('@/lib/serverUtils', async () => ({
   getTransactions: vi.fn(),
   getTransactionById: vi.fn(),
   getTransactionsByDate: vi.fn(),
+  getTotalTokenAmount: vi.fn(),
 }));
 
 const baseUrl = process.env.VITE_API_BASE_URL;
@@ -84,10 +86,16 @@ describe('Transaction service', () => {
     const id =
       '0x9b4c5f5e9b5b82f01c3126d65679c9949a5fe24679e297adb4cd51cb5af9c9bf';
     const mockTransactions = transactions.slice(0, 2);
+    const totalETH = 30000000000000000;
+    const totalUSDC = 55325862;
     (getTransactionById as Mock).mockResolvedValueOnce([
       mockTransactions,
       mockTransactions.length,
     ]);
+    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
+      totalETH,
+      totalUSDC,
+    });
     const params = new URLSearchParams({
       id,
     });
@@ -102,12 +110,15 @@ describe('Transaction service', () => {
     // assert
     const page = 1;
     const take = 50;
+
     expect(data).toStrictEqual(
-      paginatedResponse(
-        [mockTransactions, mockTransactions.length],
+      paginatedResponse({
+        data: [mockTransactions, mockTransactions.length],
         page,
         take,
-      ),
+        totalETH,
+        totalUSDC,
+      }),
     );
   });
   test('Should return transactions if id and date range are valid', async () => {
@@ -117,6 +128,12 @@ describe('Transaction service', () => {
     const startDate = '2023-05-28T00:00:00.000Z';
     const endDate = '2023-05-28T23:59:59.000Z';
     const mockTransactions = transactions.slice(0, 2);
+    const totalETH = 30000000000000000;
+    const totalUSDC = 55325862;
+    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
+      totalETH,
+      totalUSDC,
+    });
     (getTransactionById as Mock).mockResolvedValueOnce([
       mockTransactions,
       mockTransactions.length,
@@ -138,11 +155,13 @@ describe('Transaction service', () => {
     const page = 1;
     const take = 50;
     expect(data).toStrictEqual(
-      paginatedResponse(
-        [mockTransactions, mockTransactions.length],
+      paginatedResponse({
+        data: [mockTransactions, mockTransactions.length],
         page,
         take,
-      ),
+        totalETH,
+        totalUSDC,
+      }),
     );
   });
   test('Should return transactions if date range is valid', async () => {
@@ -150,6 +169,12 @@ describe('Transaction service', () => {
     const startDate = '2023-05-28T00:00:00.000Z';
     const endDate = '2023-05-28T23:59:59.000Z';
     const mockTransactions = transactions.slice(0, 2);
+    const totalETH = 30000000000000000;
+    const totalUSDC = 55325862;
+    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
+      totalETH,
+      totalUSDC,
+    });
     (getTransactionsByDate as Mock).mockResolvedValueOnce([
       mockTransactions,
       mockTransactions.length,
@@ -170,14 +195,48 @@ describe('Transaction service', () => {
     const page = 1;
     const take = 50;
     expect(data).toStrictEqual(
-      paginatedResponse(
-        [mockTransactions, mockTransactions.length],
+      paginatedResponse({
+        data: [mockTransactions, mockTransactions.length],
         page,
         take,
-      ),
+        totalETH,
+        totalUSDC,
+      }),
     );
   });
   test('Should return transactions with default filters', async () => {
+    // arrange
+    const mockTransactions = transactions.slice(0, 2);
+    const totalETH = 30000000000000000;
+    const totalUSDC = 55325862;
+    (getTotalTokenAmount as Mock).mockResolvedValueOnce({
+      totalETH,
+      totalUSDC,
+    });
+    (getTransactions as Mock).mockResolvedValueOnce([
+      mockTransactions,
+      mockTransactions.length,
+    ]);
+
+    // act
+    const request = new NextRequest(`${baseUrl}/transaction`);
+    const response = await GET(request);
+    const data = await response.json();
+
+    // assert
+    const page = 1;
+    const take = 50;
+    expect(data).toStrictEqual(
+      paginatedResponse({
+        data: [mockTransactions, mockTransactions.length],
+        page,
+        take,
+        totalETH,
+        totalUSDC,
+      }),
+    );
+  });
+  test('Should return error if server error', async () => {
     // arrange
     (getTransactions as Mock).mockRejectedValueOnce(new Error());
 
@@ -189,5 +248,5 @@ describe('Transaction service', () => {
     // assert
     expect(message).toEqual('Something went wrong, please try again');
   });
-  test('Should return error if server error');
+  test('');
 });
