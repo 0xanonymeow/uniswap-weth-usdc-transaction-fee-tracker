@@ -47,7 +47,7 @@ ETHERSCAN_API_KEY=your_api_key_here
 <br />
 
 ```
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 <br />
