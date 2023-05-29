@@ -222,7 +222,7 @@ describe('Transaction service', () => {
       }),
     );
   });
-  test('Should return error if server error', async () => {
+  test('Should return error if error occurs', async () => {
     // arrange
     (getTransactions as Mock).mockRejectedValueOnce(new Error());
 
