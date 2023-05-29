@@ -40,15 +40,13 @@ function App() {
   const now = new Date();
   const start = moment(
     new Date(
-      Date.UTC(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        0,
-        0,
-        0,
-        0,
-      ),
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0,
     ),
   ).utc();
   const end = moment(start).add(1, 'days').subtract(1, 'seconds');
@@ -90,8 +88,8 @@ function App() {
       delete params.endDate;
       return setParams({ ...params });
     }
-    const startDate = new Date(range.start.format()).toISOString();
-    const endDate = new Date(range.end.format()).toISOString();
+    const startDate = range.start.utc().format();
+    const endDate = range.end.utc().format();
 
     setParams({ ...params, startDate, endDate });
   }, [range.start, range.end, showDatetimePicker]);
@@ -153,7 +151,6 @@ function App() {
                   value={`${range.start.format(
                     'DD-MM-YYYY HH:mm',
                   )} - ${range.end.format('DD-MM-YYYY HH:mm')}`}
-                  // value={`${range.start} - ${range.end}`}
                   disabled
                 />
               </DateTimePicker>
