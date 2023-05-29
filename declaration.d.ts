@@ -1,3 +1,3 @@
 declare module 'react-tailwindcss-datetimepicker' {
-  constructor()
+  constructor();
 }

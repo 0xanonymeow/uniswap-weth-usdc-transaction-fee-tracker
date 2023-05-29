@@ -66,9 +66,7 @@ function App() {
     setRange({ start: startDate, end: endDate });
   };
 
-  const onSearch = () => {
-    refetch();
-  };
+  const onSearch = () => refetch();
 
   const onSetPage = (e: { target: { value: string } }) => {
     setParams({ ...params, page: e.target.value });
@@ -82,6 +80,7 @@ function App() {
     refetch();
   }, [params?.page, params?.take, refetch]);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (!showDatetimePicker) {
       delete params.startDate;
@@ -119,11 +118,11 @@ function App() {
               <Magnifier />
             </button>
           </div>
-          <div className="flex justify-center mt-28">
-            <div className="flex items-center mr-8">
+          <div className="mt-28 flex justify-center">
+            <div className="mr-8 flex items-center">
               <button
                 type="button"
-                className="px-6 py-4 bg-blue-300 rounded-md"
+                className="rounded-md bg-blue-300 px-6 py-4"
                 onClick={() =>
                   setShowDatetimePicker(!showDatetimePicker)
                 }
@@ -146,7 +145,7 @@ function App() {
                 smartMode
               >
                 <input
-                  className="w-[400px] rounded-md py-4  text-center bg-slate-400 text-white"
+                  className="w-[400px] rounded-md bg-slate-400  py-4 text-center text-white"
                   placeholder="Date range"
                   value={`${range.start.format(
                     'DD-MM-YYYY HH:mm',
@@ -160,9 +159,7 @@ function App() {
         <div className="mt-16 flex w-full flex-col justify-center align-middle">
           <div className="flex w-full justify-end">
             <div className="mb-4 flex w-auto gap-2">
-              <label htmlFor="page" className="self-center">
-                Page
-              </label>
+              <p className="self-center">Page</p>
               <select
                 id="page"
                 className="min-w-[50px] text-center"
@@ -172,9 +169,7 @@ function App() {
                   <option key={i}>{i + 1}</option>
                 ))}
               </select>
-              <label htmlFor="items-per-page" className="self-center">
-                Items per page
-              </label>
+              <p className="self-center">Items per page</p>
               <select
                 id="items-per-page"
                 className="min-w-[50px] text-center"
@@ -239,7 +234,7 @@ function App() {
             </tbody>
           </table>
           {getTransactionError && (
-            <div className="w-full text-center mt-32">
+            <div className="mt-32 w-full text-center">
               <p className="text-4xl">Not Found</p>
             </div>
           )}
