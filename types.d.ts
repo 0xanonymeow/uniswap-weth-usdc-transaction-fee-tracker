@@ -1,7 +1,13 @@
 type APIResponse<T> = {
   status: string;
   message: string;
-  result: Array<T>;
+  data: Array<T>;
+  take: number;
+  count: number;
+  currentPage: number;
+  nextPage: number | null;
+  prevPage: number | null;
+  lastPage: number;
 };
 
 type Transaction = {
@@ -54,7 +60,7 @@ type TransformedData = {
 type GetTransaction = {
   id?: string;
   page?: string;
-  offset?: string;
+  take?: string;
   startblock?: string;
   endblock?: string;
 };
