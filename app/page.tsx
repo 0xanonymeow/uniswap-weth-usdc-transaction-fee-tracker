@@ -191,7 +191,7 @@ function App() {
             </div>
             <div className="flex w-1/2 justify-end">
               <div className="mb-4 flex w-auto gap-2">
-                <p className="self-center dark:text-black">Page</p>
+                <p className="self-center">Page</p>
                 <select
                   id="page"
                   className="min-w-[30px] text-center"
@@ -201,9 +201,7 @@ function App() {
                     <option key={i}>{i + 1}</option>
                   ))}
                 </select>
-                <p className="self-center dark:text-black">
-                  Items per page
-                </p>
+                <p className="self-center">Items per page</p>
                 <select
                   id="items-per-page"
                   className="min-w-[30px] text-center"
