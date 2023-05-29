@@ -263,7 +263,7 @@ function App() {
                     <td className="p-2">{tokenName}</td>
                   </tr>
                 ),
-              )}
+              ).slice(0, Number(params.take))}
             </tbody>
           </table>
           {getTransactionError && (

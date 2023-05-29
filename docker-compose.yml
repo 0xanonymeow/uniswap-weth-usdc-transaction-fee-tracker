@@ -1,5 +1,5 @@
 version: '3.8'
-name: uniswap-weth-usdc-usdc-transaction-fee-tracker
+name: uni-fee-tracker
 
 services:
   server:

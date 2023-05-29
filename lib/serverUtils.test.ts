@@ -1,3 +1,4 @@
+import prisma from '@/lib/prisma';
 import transactions from '@/mock/transactions.mock.json';
 import transactionsFromBlockchain from '@/mock/transactionsFromBlockchain.mock.json';
 import { map } from 'lodash';
@@ -34,7 +35,7 @@ describe('Server Utils', () => {
       '0x9b4c5f5e9b5b82f01c3126d65679c9949a5fe24679e297adb4cd51cb5af9c9bf';
     const mockTransactions = transactions.slice(0, 2);
     vi.spyOn(prisma.transaction, 'findMany').mockResolvedValueOnce(
-      mockTransactions,
+      mockTransactions as unknown as TransformedTransaction[],
     );
 
     // act
@@ -85,7 +86,7 @@ describe('Server Utils', () => {
       mockTransactions[1],
     ]);
     vi.spyOn(prisma.transaction, 'findMany').mockResolvedValueOnce(
-      mockTransactions,
+      mockTransactions as unknown as TransformedTransaction[],
     );
 
     // act
@@ -117,10 +118,9 @@ describe('Server Utils', () => {
       transactionsFromBlockchain,
       transactionsFromBlockchain.length,
     ]);
-    vi.spyOn(prisma.transaction, 'createMany').mockResolvedValueOnce([
-      mockTransactions,
-      mockTransactions.length,
-    ]);
+    vi.spyOn(prisma.transaction, 'createMany').mockResolvedValueOnce({
+      count: mockTransactions.length,
+    });
     (createMany as Mock).mockResolvedValueOnce([
       mockTransactions,
       mockTransactions.length,
@@ -191,7 +191,7 @@ describe('Server Utils', () => {
       mockTransactions.length,
     ]);
     vi.spyOn(prisma.transaction, 'findMany').mockResolvedValueOnce(
-      mockTransactions,
+      mockTransactions as unknown as TransformedTransaction[],
     );
 
     // act
@@ -227,11 +227,15 @@ describe('Server Utils', () => {
       mockTransactions[1],
     ]);
     vi.spyOn(prisma.transaction, 'findFirst')
-      .mockResolvedValueOnce(mockTransactions[0])
-      .mockResolvedValueOnce(mockTransactions[1]);
+      .mockResolvedValueOnce(
+        (mockTransactions as unknown as TransformedTransaction[])[0],
+      )
+      .mockResolvedValueOnce(
+        (mockTransactions as unknown as TransformedTransaction[])[1],
+      );
 
     vi.spyOn(prisma.transaction, 'findMany').mockResolvedValueOnce(
-      mockTransactions,
+      mockTransactions as unknown as TransformedTransaction[],
     );
 
     // act

@@ -3,6 +3,7 @@ FROM node:lts-bullseye-slim
 WORKDIR /app
 
 COPY . .
+COPY .env.test /app/.env.test
 
 # install dependencies
 RUN npm ci
