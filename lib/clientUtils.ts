@@ -39,7 +39,7 @@ export const queryFn = async ({
 }) => fetch(url, options).then((res) => res.json());
 
 export const getFeeInUsd = (amount: string, ethUsd: string) => {
-  const usdAmount = (Number(amount) * Number(ethUsd)) / 10 ** 18;
+  const usdAmount = (Number(amount) * Number(ethUsd)) / 10 ** 9;
   return usdAmount.toFixed(2);
 };
 
