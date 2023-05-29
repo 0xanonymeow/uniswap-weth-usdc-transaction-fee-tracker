@@ -108,6 +108,9 @@ function App() {
               onChange={(e) =>
                 setParams({ ...params, id: e.target.value })
               }
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') onSearch();
+              }}
               placeholder="0x3d4f354..."
             />
             <button
