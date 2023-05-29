@@ -162,43 +162,59 @@ function App() {
           </div>
         </div>
         <div className="mt-16 flex w-full flex-col justify-center align-middle">
-          <div className="flex w-full justify-start">
-            <span>Current ETH/USDC Price:</span>
-            <span className="ml-2 font-bold">
-              {`$${Number(ethPrice).toFixed(2)}`}
-            </span>
-          </div>
-          <p className="font-bold">{`Total fee in ETH: $${totalETH.toFixed(
-            2,
-          )}`}</p>
-          <p className="font-bold">{`Total fee in USDC: $${totalUSDC.toFixed(
-            2,
-          )}`}</p>
-          <div className="flex w-full justify-end">
-            <div className="mb-4 flex w-auto gap-2">
-              <p className="self-center">Page</p>
-              <select
-                id="page"
-                className="min-w-[50px] text-center"
-                onChange={onSetPage}
-              >
-                {map([...Array(lastPage)], (_, i) => (
-                  <option key={i}>{i + 1}</option>
-                ))}
-              </select>
-              <p className="self-center">Items per page</p>
-              <select
-                id="items-per-page"
-                className="min-w-[50px] text-center"
-                onChange={onSetItemsPerPage}
-              >
-                <option>50</option>
-                <option>100</option>
-                <option>150</option>
-                <option>200</option>
-                <option>250</option>
-                <option>300</option>
-              </select>
+          <div className="mb-4  flex">
+            <div className="flex w-1/2 flex-col ">
+              <div>
+                <span>Current ETH/USDC Price:</span>
+                <span className="ml-2 font-bold">
+                  {`$${Number(ethPrice).toFixed(2)}`}
+                </span>
+              </div>
+              <div>
+                <span className="mr-2">Total fee in ETH:</span>
+                <span className="font-bold">{`$${getValueInUsd(
+                  String(totalETH),
+                  '18',
+                  'WETH',
+                  priceInUsd,
+                )}`}</span>
+              </div>
+              <div>
+                <span className="mr-2">Total fee in USDC:</span>
+                <span className="font-bold">{`$${getValueInUsd(
+                  String(totalUSDC),
+                  '6',
+                  'USDC',
+                  priceInUsd,
+                )}`}</span>
+              </div>
+            </div>
+            <div className="flex w-1/2 justify-end">
+              <div className="mb-4 flex w-auto gap-2">
+                <p className="self-center">Page</p>
+                <select
+                  id="page"
+                  className="min-w-[30px] text-center"
+                  onChange={onSetPage}
+                >
+                  {map([...Array(lastPage)], (_, i) => (
+                    <option key={i}>{i + 1}</option>
+                  ))}
+                </select>
+                <p className="self-center">Items per page</p>
+                <select
+                  id="items-per-page"
+                  className="min-w-[30px] text-center"
+                  onChange={onSetItemsPerPage}
+                >
+                  <option>50</option>
+                  <option>100</option>
+                  <option>150</option>
+                  <option>200</option>
+                  <option>250</option>
+                  <option>300</option>
+                </select>
+              </div>
             </div>
           </div>
           <table className="w-full text-white dark:text-slate-800">
