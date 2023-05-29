@@ -4,6 +4,7 @@ import {
   getTransactionsByDate,
   paginatedResponse,
 } from '@/lib/serverUtils';
+import { filter, reduce } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
@@ -55,7 +56,36 @@ export const GET = async (request: NextRequest) => {
     else if (!date.startDate && !date.endDate)
       result = await getTransactions({ page, take, skip });
 
-    return NextResponse.json(paginatedResponse(result, page, take));
+    const totalETH =
+      reduce(
+        filter(
+          result[0],
+          ({ tokenSymbol }) => tokenSymbol === 'WETH',
+        ),
+        (acc, cur) => Number(acc) + Number(cur.value),
+        0,
+      ) /
+      10 ** 18;
+    const totalUSDC =
+      reduce(
+        filter(
+          result[0],
+          ({ tokenSymbol }) => tokenSymbol === 'USDC',
+        ),
+        (acc, cur) => acc + Number(cur.value),
+        0,
+      ) /
+      10 ** 12;
+
+    return NextResponse.json(
+      paginatedResponse({
+        data: result,
+        totalETH,
+        totalUSDC,
+        page,
+        take,
+      }),
+    );
   } catch (e) {
     if ((e as Error).message === 'NEXT_NOT_FOUND')
       return NextResponse.json(

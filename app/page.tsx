@@ -36,6 +36,8 @@ function App() {
   const getTransactionError = useMemo(() => data?.message, [data]);
 
   const lastPage = useMemo(() => data?.lastPage || 1, [data]);
+  const totalETH = useMemo(() => data?.totalETH || 0, [data]);
+  const totalUSDC = useMemo(() => data?.totalUSDC || 0, [data]);
 
   const now = new Date();
   const start = moment(
@@ -160,6 +162,18 @@ function App() {
           </div>
         </div>
         <div className="mt-16 flex w-full flex-col justify-center align-middle">
+          <div className="flex w-full justify-start">
+            <span>Current ETH/USDC Price:</span>
+            <span className="ml-2 font-bold">
+              {`$${Number(ethPrice).toFixed(2)}`}
+            </span>
+          </div>
+          <p className="font-bold">{`Total fee in ETH: $${totalETH.toFixed(
+            2,
+          )}`}</p>
+          <p className="font-bold">{`Total fee in USDC: $${totalUSDC.toFixed(
+            2,
+          )}`}</p>
           <div className="flex w-full justify-end">
             <div className="mb-4 flex w-auto gap-2">
               <p className="self-center">Page</p>

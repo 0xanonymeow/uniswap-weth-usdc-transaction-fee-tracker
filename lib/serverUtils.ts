@@ -7,11 +7,13 @@ import {
   getEventTransactions,
 } from './etherscan';
 
-export const paginatedResponse = (
-  data: [unknown[], number],
-  page: number = 1,
-  take: number = 50,
-) => {
+export const paginatedResponse = ({
+  data,
+  totalETH,
+  totalUSDC,
+  page = 1,
+  take = 50,
+}: PaginatedResponse) => {
   const [result, total] = data;
   const lastPage = Math.ceil(total / take);
   const nextPage = page + 1 > lastPage ? null : page + 1;
@@ -25,6 +27,8 @@ export const paginatedResponse = (
     nextPage,
     prevPage,
     lastPage,
+    totalETH,
+    totalUSDC,
   };
 };
 

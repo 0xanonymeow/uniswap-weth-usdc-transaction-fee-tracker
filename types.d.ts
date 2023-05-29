@@ -8,6 +8,8 @@ type APIResponse<T> = {
   nextPage: number | null;
   prevPage: number | null;
   lastPage: number;
+  totalETH: number;
+  totalUSDC: number;
 };
 
 type Transaction = {
@@ -82,4 +84,12 @@ type Pagination = {
   page?: number;
   take?: number;
   skip?: numbe;
+};
+
+type PaginatedResponse = {
+  data: [unknown[], number] = [];
+  totalETH: number;
+  totalUSDC: number;
+  page: number;
+  take: number;
 };
