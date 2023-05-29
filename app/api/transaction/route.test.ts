@@ -248,5 +248,4 @@ describe('Transaction service', () => {
     // assert
     expect(message).toEqual('Something went wrong, please try again');
   });
-  test('');
 });
