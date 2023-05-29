@@ -45,7 +45,6 @@
     "@types/aos": "^3.0.4",
     "@types/cron": "^2.0.1",
     "@types/lodash": "^4.14.194",
-    "@types/moment": "^2.13.0",
     "@vitejs/plugin-react": "^4.0.0",
     "@vitest/coverage-c8": "^0.31.1",
     "@vitest/ui": "^0.31.1",

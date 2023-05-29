@@ -2,14 +2,6 @@ version: '3.8'
 name: uni-fee-tracker
 
 services:
-  server:
-    build: .
-    container_name: server
-    env_file:
-      - .env.production
-    ports:
-      - '3000:3000'
-
   db:
     image: postgres
     container_name: db
@@ -21,6 +13,25 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build: .
+    container_name: server
+    env_file:
+      - .env.production
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint:
+      ['bash', '-c', 'cd /app && npm run db:push && npm run start']
+
   swagger:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
