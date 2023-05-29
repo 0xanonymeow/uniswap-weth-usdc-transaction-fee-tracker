@@ -31,40 +31,15 @@ export const paginatedResponse = (
 export const checkIfDateExist = async (date: DateRange) => {
   if (!date.startDate || !date.endDate) return [null, null];
 
-  const startDate = new Date(date.startDate!);
-  const endDate = new Date(date.endDate!);
-  const startDateHours = (`0${  startDate.getHours()}`).slice(-2);
-  const startDateMinutes = (
-    `0${  String(Number(startDate.getMinutes()) + 1)}`
-  ).slice(-2);
-
-  const endDateHours = (`0${  endDate.getHours()}`).slice(-2);
-  const endDateMinutes = (
-    `0${  String(Number(endDate.getMinutes() - 1))}`
-  ).slice(-2);
-
-  const startDateOffset = `T${
-    `${startDateHours  }:${  startDateMinutes}`
-  }:00.000Z`;
-  const endDateOffset = `T${
-    `${endDateHours  }:${  endDateMinutes}`
-  }:00.000Z`;
-
   return prisma.$transaction([
     prisma.transaction.findFirst({
       where: {
-        date: {
-          gte: date.startDate,
-          lte: `${date.startDate?.split('T')?.[0]}${startDateOffset}`,
-        },
+        date: date.startDate,
       },
     }),
     prisma.transaction.findFirst({
       where: {
-        date: {
-          gte: `${date.endDate?.split('T')?.[0]}${endDateOffset}`,
-          lte: date.endDate,
-        },
+        date: date.endDate,
       },
     }),
   ]);
@@ -170,18 +145,32 @@ export const getTransactionById = async (
     }
   }
 
-  const blockNumber = await getBlockNumberByHash(id);
-  if (blockNumber) {
+  const blockNumberData = getBlockNumberByHash(id);
+  const startBlockData = getBlockNumberByTimestamp(
+    date.startDate!,
+    'after',
+  );
+  const endBlockData = getBlockNumberByTimestamp(
+    date.endDate!,
+    'before',
+  );
+
+  const [blockNumber, startBlock, endBlock] = await Promise.all([
+    blockNumberData,
+    startBlockData,
+    endBlockData,
+  ]);
+
+  if (startBlock <= blockNumber && blockNumber <= endBlock) {
     const [result] = await getEventTransactions({
       // if not, find the event transactions from the blockchain
       page: '1',
       offset: '10000',
-      startBlock: blockNumber,
-      endBlock: blockNumber,
+      startBlock,
+      endBlock,
     });
-
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     const transactions = filter(result, ({ hash }) => hash === id);
+
     const [transformedData, count] = await createMany(transactions);
 
     return [transformedData, count];
