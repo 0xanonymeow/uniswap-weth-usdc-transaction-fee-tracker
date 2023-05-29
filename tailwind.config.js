@@ -1,9 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './node_modules/react-tailwindcss-datetimepicker/dist/react-tailwindcss-datetimepicker.js',
   ],
   theme: {
     extend: {
@@ -15,5 +18,13 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [new MiniCssExtractPlugin()],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+    ],
+  },
 };
