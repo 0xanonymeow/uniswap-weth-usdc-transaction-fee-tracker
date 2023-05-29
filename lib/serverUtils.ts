@@ -149,30 +149,49 @@ export const getTransactionById = async (
     }
   }
 
-  const blockNumberData = getBlockNumberByHash(id);
-  const startBlockData = getBlockNumberByTimestamp(
-    date.startDate!,
-    'after',
-  );
-  const endBlockData = getBlockNumberByTimestamp(
-    date.endDate!,
-    'before',
-  );
+  if (date.startDate && date.endDate) {
+    const blockNumberData = getBlockNumberByHash(id);
+    const startBlockData = getBlockNumberByTimestamp(
+      date.startDate,
+      'after',
+    );
+    const endBlockData = getBlockNumberByTimestamp(
+      date.endDate,
+      'before',
+    );
 
-  const [blockNumber, startBlock, endBlock] = await Promise.all([
-    blockNumberData,
-    startBlockData,
-    endBlockData,
-  ]);
+    const [blockNumber, startBlock, endBlock] = await Promise.all([
+      blockNumberData,
+      startBlockData,
+      endBlockData,
+    ]);
+    if (startBlock <= blockNumber && blockNumber <= endBlock) {
+      const [result] = await getEventTransactions({
+        // if not, find the event transactions from the blockchain
+        page: '1',
+        offset: '10000',
+        startBlock,
+        endBlock,
+      });
+      const transactions = filter(result, ({ hash }) => hash === id);
 
-  if (startBlock <= blockNumber && blockNumber <= endBlock) {
+      const [transformedData, count] = await createMany(transactions);
+
+      return [transformedData, count];
+    }
+  }
+
+  // if date range is not provided
+  const blockNumber = await getBlockNumberByHash(id);
+  if (blockNumber) {
     const [result] = await getEventTransactions({
       // if not, find the event transactions from the blockchain
       page: '1',
       offset: '10000',
-      startBlock,
-      endBlock,
+      startBlock: blockNumber,
+      endBlock: blockNumber,
     });
+
     const transactions = filter(result, ({ hash }) => hash === id);
 
     const [transformedData, count] = await createMany(transactions);
@@ -236,7 +255,7 @@ export const getTransactionsByDate = async (
   return notFound();
 };
 
-export const getTotalTokenAmount = (
+export const getTotalTokenAmount = async (
   transactions: TransformedTransaction[],
 ) => {
   const totalETH = reduce(
