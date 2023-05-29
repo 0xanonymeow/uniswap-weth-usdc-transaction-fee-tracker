@@ -194,7 +194,7 @@ function App() {
                 <p className="self-center">Page</p>
                 <select
                   id="page"
-                  className="min-w-[30px] text-center"
+                  className="min-w-[30px] text-center dark:text-black"
                   onChange={onSetPage}
                 >
                   {map([...Array(lastPage)], (_, i) => (
@@ -204,7 +204,7 @@ function App() {
                 <p className="self-center">Items per page</p>
                 <select
                   id="items-per-page"
-                  className="min-w-[30px] text-center"
+                  className="min-w-[30px] text-center dark:text-black"
                   onChange={onSetItemsPerPage}
                 >
                   <option>50</option>
