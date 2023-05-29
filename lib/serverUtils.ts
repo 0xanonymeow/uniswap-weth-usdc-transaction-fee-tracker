@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { filter, map } from 'lodash';
+import { filter, map, reduce } from 'lodash';
 import { notFound } from 'next/navigation';
 import {
   getBlockNumberByHash,
@@ -234,4 +234,24 @@ export const getTransactionsByDate = async (
   }
 
   return notFound();
+};
+
+export const getTotalTokenAmount = (
+  transactions: TransformedTransaction[],
+) => {
+  const totalETH = reduce(
+    filter(transactions, ({ tokenSymbol }) => tokenSymbol === 'WETH'),
+    (acc, cur) => Number(acc) + Number(cur.value),
+    0,
+  );
+  const totalUSDC = reduce(
+    filter(transactions, ({ tokenSymbol }) => tokenSymbol === 'USDC'),
+    (acc, cur) => acc + Number(cur.value),
+    0,
+  );
+
+  return {
+    totalETH,
+    totalUSDC,
+  };
 };

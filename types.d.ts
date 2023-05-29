@@ -88,8 +88,8 @@ type Pagination = {
 
 type PaginatedResponse = {
   data: [unknown[], number] = [];
-  totalETH: number;
-  totalUSDC: number;
+  totalETH?: number;
+  totalUSDC?: number;
   page: number;
   take: number;
 };

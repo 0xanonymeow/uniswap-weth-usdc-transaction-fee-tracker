@@ -1,10 +1,10 @@
 import {
+  getTotalTokenAmount,
   getTransactionById,
   getTransactions,
   getTransactionsByDate,
   paginatedResponse,
 } from '@/lib/serverUtils';
-import { filter, reduce } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
@@ -56,16 +56,7 @@ export const GET = async (request: NextRequest) => {
     else if (!date.startDate && !date.endDate)
       result = await getTransactions({ page, take, skip });
 
-    const totalETH = reduce(
-      filter(result[0], ({ tokenSymbol }) => tokenSymbol === 'WETH'),
-      (acc, cur) => Number(acc) + Number(cur.value),
-      0,
-    );
-    const totalUSDC = reduce(
-      filter(result[0], ({ tokenSymbol }) => tokenSymbol === 'USDC'),
-      (acc, cur) => acc + Number(cur.value),
-      0,
-    );
+    const { totalETH, totalUSDC } = getTotalTokenAmount(result[0]);
 
     return NextResponse.json(
       paginatedResponse({
