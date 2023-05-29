@@ -1,11 +1,11 @@
+import prisma from '@/lib/prisma';
+import { filter, map } from 'lodash';
+import { notFound } from 'next/navigation';
 import {
   getBlockNumberByHash,
   getBlockNumberByTimestamp,
   getEventTransactions,
-} from '@/lib/etherscan';
-import prisma from '@/lib/prisma';
-import { filter, map } from 'lodash';
-import { notFound } from 'next/navigation';
+} from './etherscan';
 
 export const paginatedResponse = (
   data: [unknown[], number],
@@ -33,11 +33,21 @@ export const checkIfDateExist = async (date: DateRange) => {
 
   const startDate = new Date(date.startDate!);
   const endDate = new Date(date.endDate!);
+  const startDateHours = (`0${  startDate.getHours()}`).slice(-2);
+  const startDateMinutes = (
+    `0${  String(Number(startDate.getMinutes()) + 1)}`
+  ).slice(-2);
+
+  const endDateHours = (`0${  endDate.getHours()}`).slice(-2);
+  const endDateMinutes = (
+    `0${  String(Number(endDate.getMinutes() - 1))}`
+  ).slice(-2);
+
   const startDateOffset = `T${
-    startDate.getHours() + startDate.getMinutes() + 1
+    `${startDateHours  }:${  startDateMinutes}`
   }:00.000Z`;
   const endDateOffset = `T${
-    endDate.getHours() + endDate.getMinutes() - 1
+    `${endDateHours  }:${  endDateMinutes}`
   }:00.000Z`;
 
   return prisma.$transaction([
@@ -45,16 +55,14 @@ export const checkIfDateExist = async (date: DateRange) => {
       where: {
         date: {
           gte: date.startDate,
-          lte: `${
-            date.startDate?.split('T')?.[0]
-          }T${startDateOffset}`,
+          lte: `${date.startDate?.split('T')?.[0]}${startDateOffset}`,
         },
       },
     }),
     prisma.transaction.findFirst({
       where: {
         date: {
-          gte: `${date.endDate?.split('T')?.[0]}T${endDateOffset}`,
+          gte: `${date.endDate?.split('T')?.[0]}${endDateOffset}`,
           lte: date.endDate,
         },
       },

@@ -61,8 +61,8 @@ type GetTransaction = {
   id?: string;
   page?: string;
   take?: string;
-  startblock?: string;
-  endblock?: string;
+  startDate?: string;
+  endDate?: string;
 };
 
 type GetEventTransactions = {

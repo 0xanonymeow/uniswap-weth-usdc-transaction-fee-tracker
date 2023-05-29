@@ -7,8 +7,8 @@ export const useLazyGetTranasaction = ({
   id,
   page,
   take,
-  startblock,
-  endblock,
+  startDate,
+  endDate,
   options,
 }: GetTransaction & {
   options?: Omit<
@@ -21,8 +21,8 @@ export const useLazyGetTranasaction = ({
   if (id) params.append('id', id);
   if (page) params.append('page', page);
   if (take) params.append('take', take);
-  if (startblock) params.append('startblock', startblock);
-  if (endblock) params.append('endblock', endblock);
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
 
   const [refetch, query] = useLazyQuery<
     { data: Transaction },
