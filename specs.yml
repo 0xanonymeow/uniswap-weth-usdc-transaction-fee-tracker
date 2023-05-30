@@ -108,9 +108,9 @@ paths:
                 currentPage: 1
                 nextPage: null
                 prevPage: null
-                lastPage: '1,'
-                totalETH: '30000000000000000,'
-                totalUSDC: '55325862,'
+                lastPage: 1
+                totalETH: 30000000000000000
+                totalUSDC: 55325862
                 data:
                   - date: '2023-05-28T10:00:11.000Z'
                     fee: '3149538.291756912'
