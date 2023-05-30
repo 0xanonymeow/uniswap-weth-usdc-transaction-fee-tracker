@@ -179,6 +179,8 @@ export const getTransactionById = async (
 
       return [transformedData, count];
     }
+
+    return notFound();
   }
 
   // if date range is not provided
