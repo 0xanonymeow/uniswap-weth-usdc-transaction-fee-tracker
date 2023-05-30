@@ -165,7 +165,10 @@ export const getTransactionById = async (
       startBlockData,
       endBlockData,
     ]);
-    if (startBlock <= blockNumber && blockNumber <= endBlock) {
+    if (
+      Number(startBlock) <= Number(blockNumber) &&
+      Number(blockNumber) <= Number(endBlock)
+    ) {
       const [result] = await getEventTransactions({
         // if not, find the event transactions from the blockchain
         page: '1',

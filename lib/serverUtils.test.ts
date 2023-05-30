@@ -325,6 +325,36 @@ describe('Server Utils', () => {
         endDate,
       });
     } catch (e) {
+      // assert
+      expect((e as Error).message).toEqual('NEXT_NOT_FOUND');
+    }
+  });
+  test('Should not return transactions if id is provided and date range is invalid', async () => {
+    // arrange
+    const id =
+      '0x9b4c5f5e9b5b82f01c3126d65679c9949a5fe24679e297adb4cd51cb5af9c9bf';
+    const startDate = '2022-05-28T00:00:00.000Z';
+    const endDate = '2022-05-29T00:00:00.000Z';
+
+    (checkIfDateExist as Mock).mockReturnValueOnce([null, null]);
+    vi.spyOn(prisma, '$transaction').mockResolvedValueOnce([
+      null,
+      null,
+    ]);
+    vi.spyOn(prisma.transaction, 'findFirst')
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null);
+
+    (getBlockNumberByHash as Mock).mockResolvedValueOnce('17356784');
+    (getBlockNumberByTimestamp as Mock)
+      .mockResolvedValueOnce('0')
+      .mockResolvedValueOnce('1');
+
+    // act
+    try {
+      await getTransactionById(id, { startDate, endDate });
+    } catch (e) {
+      // assert
       expect((e as Error).message).toEqual('NEXT_NOT_FOUND');
     }
   });
